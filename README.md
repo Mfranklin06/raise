@@ -1,3 +1,7 @@
+# raise
+RAISE - Rede de Automação Institucional por Sistemas Embarcados.
+Projeto desenvolvido por alunos do IFRN campus Parnamirim dedicados a organização e oferecimento de uma melhoria na gestão energetica, promovendo uma melhor admissão burocrática dos recursos humanos e tecnológicos.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
