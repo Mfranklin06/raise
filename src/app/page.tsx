@@ -14,7 +14,7 @@ interface Sala {
 }
 
 async function fetchSalas(): Promise<Sala[]> {
-  const res = await fetch('/api/salas', { cache: 'no-store' });
+  const res = await fetch('raise-eight.vercel.app/api/salas', { cache: 'no-store' });
   if (!res.ok) {
     throw new Error('Failed to fetch salas');
   }
