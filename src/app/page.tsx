@@ -35,7 +35,7 @@ export default async function Home() {
   const salas = await fetchSalas();
   return (
     <main>
-      <h1 className={`${poppins.className} text-center justify-center pt-20 text-4xl`}>
+      <h1 className={`${poppins.className} text-white text-center justify-center pt-20 text-4xl`}>
         Salas disponíveis
       </h1>
       <SalasCards salas={salas} />
