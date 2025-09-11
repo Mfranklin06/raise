@@ -2,17 +2,18 @@
 
 import { Box } from '@mui/material'
 import { Poppins } from 'next/font/google';
+import { UnidadeAC } from '@/lib/data';
 
 const poppins = Poppins({
   weight: ['400'],
   subsets: ['latin'],
 });
-export default function SalasCards({salas}: {salas: { id: number; name: string; status: string; temperatura: number; }[]}) {
+export default function SalasCards({unidades}: {unidades: UnidadeAC[]}) { 
   return (
     <Box sx={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, display: 'grid', justifyItems: 'center', mt: 4, pt: 20 }}>
-        {salas.map((sala) => (
+        {unidades.map((unidades) => (
           <Box
-            key={sala.id}
+            key={unidades.id}
             sx={{
               width: 550,
               height: 200,
@@ -32,10 +33,10 @@ export default function SalasCards({salas}: {salas: { id: number; name: string; 
           >
             <div className={`${poppins.className} grid grid-cols-1 gap-4 text-center text-xl`}>
               <h1>
-                {sala.name}
+                {unidades.name}
               </h1>
               <h2>
-                Status: {sala.status} | Temperatura: {sala.temperatura}°C
+                Status: {unidades.current_status} | Temperatura: {unidades.current_temperatura}°C
               </h2>
             </div>
           </Box>
