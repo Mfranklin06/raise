@@ -22,7 +22,7 @@ export default async function Home() {
 
   return (
     <main>
-      <h1 className={`${poppins.className} text-white text-center justify-center pt-20 text-4xl`}>
+      <h1 className={`${poppins.className} bg-[#0e0c26]  text-white text-center justify-center pt-20 text-4xl`}>
         Unidades Disponíveis
       </h1>
       {/* IMPORTANTE: O componente SalasCards agora receberá um array de 'UnidadeAC'.
