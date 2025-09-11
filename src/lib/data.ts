@@ -111,9 +111,9 @@ export const updateUnidadeACState = async (
   unidadeId: number,
   novoEstado: {
     status: string;
-    temperatura: number;
-    modo: string;
-    ventilacao: string;
+    temperatura: number | null;
+    modo: string | null;
+    ventilacao: string | null;
   }
 ) => {
   const { status, temperatura, modo, ventilacao } = novoEstado;
@@ -171,5 +171,39 @@ export const getUnidadesComEstadoECodigo = async () => {
   } catch (error) {
     console.error('Erro ao buscar unidades com estado e código:', error);
     throw new Error('Falha ao buscar dados das unidades.');
+  }
+};
+
+export const findRawCodeForState = async (
+  unidadeId: number,
+  estado: {
+    modo: string;
+    temperatura: number | null;
+    ventilacao: string | null;
+  }
+) => {
+  const { modo, temperatura, ventilacao } = estado;
+
+  try {
+    const { rows } = await db.query(
+      `SELECT raw_code FROM codigos_raw
+       WHERE
+         unidade_id = $1
+         AND config_modo IS NOT DISTINCT FROM $2
+         AND config_temperatura IS NOT DISTINCT FROM $3
+         AND config_ventilacao IS NOT DISTINCT FROM $4
+       LIMIT 1;`, // LIMIT 1 para garantir que pegamos apenas um resultado
+      [unidadeId, modo, temperatura, ventilacao]
+    );
+
+    if (rows.length > 0) {
+      return rows[0].raw_code as string;
+    }
+    
+    return null; // Retorna null se nenhum código for encontrado para essa combinação
+  
+  } catch (error) {
+    console.error("Erro ao buscar código raw:", error);
+    return null;
   }
 };
