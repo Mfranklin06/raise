@@ -135,3 +135,41 @@ export const updateUnidadeACState = async (
     throw new Error("Falha ao atualizar o estado.");
   }
 };
+
+export const getUnidadesComEstadoECodigo = async () => {
+  try {
+    // Esta consulta única e correta faz todo o trabalho no banco de dados.
+    const { rows } = await db.query(`
+      SELECT
+        ua.*, -- Pega todas as colunas da tabela de unidades
+        cr.raw_code AS current_raw_code -- Pega o código raw correspondente, se encontrar
+      FROM
+        unidades_ac ua -- Começa com a tabela de unidades (a tabela da "esquerda")
+      LEFT JOIN
+        codigos_raw cr -- Junta com a tabela de códigos (a tabela da "direita")
+      ON
+        -- A cláusula ON define TODAS as regras para encontrar uma correspondência
+        ua.id = cr.unidade_id -- Regra 1: O ID da unidade deve ser o mesmo.
+        
+        -- Regra 2: O modo/status deve corresponder.
+        -- 'desligado' está em 'current_status', mas 'frio' está em 'current_modo',
+        -- então COALESCE escolhe o primeiro valor que não for nulo para comparar.
+        AND COALESCE(ua.current_modo, ua.current_status) = cr.config_modo
+        
+        -- Regra 3: A temperatura deve ser igual OU ambas devem ser nulas.
+        AND (ua.current_temperatura = cr.config_temperatura OR (ua.current_temperatura IS NULL AND cr.config_temperatura IS NULL))
+        
+        -- Regra 4: A ventilação deve ser igual OU ambas devem ser nulas.
+        AND (ua.current_ventilacao = cr.config_ventilacao OR (ua.current_ventilacao IS NULL AND cr.config_ventilacao IS NULL))
+      ORDER BY
+        ua.id;
+    `);
+    
+    // A consulta agora retorna todas as unidades, com 'current_raw_code' preenchido ou nulo.
+    return rows;
+
+  } catch (error) {
+    console.error('Erro ao buscar unidades com estado e código:', error);
+    throw new Error('Falha ao buscar dados das unidades.');
+  }
+};
