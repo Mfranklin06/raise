@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { addCodigoRaw } from "@/lib/data";
+import { addCodigoRaw, findRawCodeForState, updateUnidadeACState } from "@/lib/data";
 
 export async function criarSalaAction(formData: FormData) {
   const nome = formData.get("nome") as string;
@@ -63,4 +63,49 @@ export async function addCodigoRawAction(formData: FormData) {
 
   // 5. Redireciona o usuário de volta para a página de detalhes da unidade.
   redirect(`/salas/${unidadeId}`); // Ou para onde fizer sentido
+}
+
+export async function updateEstadoAction(formData: FormData) {
+  // 1. Extrai os dados do formulário/botão que foi clicado.
+  const unidadeId = parseInt(formData.get('unidadeId') as string, 10);
+  const novoModo = formData.get('modo') as string;
+  const novaTempStr = formData.get('temperatura') as string;
+  const novaVentilacao = formData.get('ventilacao') as string;
+
+  const novaTemperatura = novaTempStr ? parseInt(novaTempStr, 10) : null;
+
+  // Validação
+  if (!unidadeId || !novoModo) {
+    throw new Error("ID da Unidade e Modo são obrigatórios.");
+  }
+  
+  // 2. Chama o "detetive" para encontrar o código raw correspondente.
+  const rawCode = await findRawCodeForState(unidadeId, {
+    modo: novoModo,
+    temperatura: novaTemperatura,
+    ventilacao: novaVentilacao,
+  });
+  
+  // 3. Verifica se um código foi encontrado.
+  if (!rawCode) {
+    // Se não encontrou, não faz nada para não colocar o AC num estado inválido.
+    // Você pode adicionar uma mensagem de erro aqui se quiser.
+    console.error(`Nenhum código RAW encontrado para o estado: ${novoModo}, ${novaTemperatura}°C`);
+    return; 
+  }
+
+  // 4. (SIMULAÇÃO) Enviar o código para o hardware.
+  console.log(`ENVIANDO COMANDO PARA UNIDADE ${unidadeId}:`);
+  console.log(`RAW Code: ${rawCode}`);
+  
+  // 5. Se o envio foi "bem-sucedido", atualiza o estado no banco de dados.
+  await updateUnidadeACState(unidadeId, {
+    status: 'ligado', // Assumimos que qualquer comando que não seja 'desligar' liga o aparelho
+    modo: novoModo,
+    temperatura: novaTemperatura,
+    ventilacao: novaVentilacao,
+  });
+
+  // 6. Limpa o cache para que a página principal mostre o novo estado.
+  revalidatePath('/');
 }
