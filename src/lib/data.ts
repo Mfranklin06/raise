@@ -1,35 +1,137 @@
-interface Sala {
+// src/lib/data.ts
+import { db } from "@vercel/postgres";
+
+// --- Interfaces para os novos formatos ---
+export interface UnidadeAC {
   id: number;
   name: string;
-  status: string;
-  temperatura: number;
-  raw: number[];
-}
-const salas: Sala[] = [
-  { id: 1, name: "robotica 22", status: "aberto", temperatura: 22, raw: [
-    8420, 4228, 548, 564, 568, 1628, 552, 1628, 552, 564, 568, 1628, 552, 560, 572, 1628, 548, 568, 568, 560, 568, 1632, 548, 564, 568, 564, 568, 1628, 552, 1628, 548, 1632, 548, 564, 568, 568, 564, 564, 568, 564, 568, 564, 572, 560, 568, 568, 564, 584, 552, 564, 564, 588, 548, 564, 568, 564, 568, 564, 568, 564, 568, 584, 548, 564, 568, 564, 568, 1628, 552, 564, 568, 564, 568, 584, 548, 564, 568, 1628, 552, 580, 552, 564, 568, 580, 552, 1628, 548, 568, 568, 564, 568, 564, 568, 564, 568, 564, 568, 584, 548, 564, 568, 584, 548, 584, 552, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 584, 548, 564, 568, 564, 568, 584, 548, 564, 568, 568, 564, 584, 548, 568, 568, 580, 548, 568, 568, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 568, 564, 568, 564, 568, 568, 564, 572, 560, 568, 564, 568, 564, 568, 564, 568, 568, 564, 568, 568, 584, 548, 580, 552, 584, 548, 584, 548, 584, 548, 584, 548, 584, 548, 584, 552, 584, 544, 588, 548, 584, 548, 584, 548, 584, 548, 588, 544, 588, 544, 588, 544, 588, 548, 584, 548, 588, 544, 588, 544, 588, 544, 592, 540, 592, 540, 592, 540, 592, 540, 596, 536, 596, 536, 596, 536, 600, 532, 600, 532, 1668, 512, 600, 536, 596, 536, 1668, 512, 1668, 508, 624, 512, 620, 512, 620, 512, 
-  ] },
-  { id: 2, name: "robotica 24", status: "fechado", temperatura: 24, raw: [
-    8424, 4228, 552, 564, 568, 1628, 548, 1632, 548, 564, 568, 1632, 548, 564, 568, 1632, 548, 568, 564, 568, 568, 564, 564, 1632, 552, 564, 564, 1632, 548, 1632, 548, 1632, 548, 568, 568, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 568, 568, 560, 572, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 568, 564, 564, 568, 1632, 548, 568, 564, 568, 568, 564, 568, 564, 568, 1628, 552, 564, 568, 564, 568, 584, 548, 1628, 552, 564, 568, 568, 564, 568, 564, 568, 568, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 568, 564, 568, 568, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 564, 568, 568, 568, 564, 568, 564, 568, 564, 568, 564, 568, 584, 548, 584, 552, 580, 552, 580, 552, 580, 552, 580, 552, 584, 548, 584, 548, 584, 548, 584, 548, 584, 548, 584, 548, 584, 548, 588, 544, 588, 544, 588, 544, 588, 544, 588, 548, 584, 548, 588, 544, 588, 544, 588, 544, 592, 540, 592, 540, 592, 540, 596, 536, 596, 536, 596, 536, 596, 536, 596, 536, 600, 532, 600, 532, 600, 536, 596, 536, 596, 536, 600, 532, 600, 532, 600, 536, 604, 528, 620, 512, 620, 512, 620, 512, 620, 512, 624, 508, 624, 512, 620, 512, 620, 512, 1668, 512, 1668, 512, 620, 512, 1668, 512, 1668, 512, 620, 512, 620, 512, 624, 508, 
-  ] },
-  { id: 3, name: "robotica 19", status: "aberto", temperatura: 19, raw: [
-    8440, 4228, 552, 572, 572, 1616, 568, 1612, 568, 576, 568, 1636, 548, 576, 568, 1616, 568, 572, 572, 1632, 552, 1632, 552, 1628, 552, 1616, 568, 572, 572, 1612, 568, 1632, 552, 572, 572, 568, 572, 572, 572, 572, 572, 572, 572, 572, 572, 572, 572, 572, 568, 576, 568, 572, 572, 572, 572, 572, 568, 576, 568, 576, 568, 572, 568, 576, 568, 576, 568, 1612, 572, 1612, 568, 572, 572, 572, 572, 572, 572, 1612, 568, 576, 568, 576, 568, 572, 568, 576, 568, 576, 568, 576, 568, 576, 568, 572, 572, 572, 568, 576, 568, 576, 568, 572, 572, 572, 568, 576, 568, 576, 568, 576, 568, 576, 568, 572, 568, 576, 568, 576, 568, 576, 564, 576, 568, 576, 568, 576, 564, 576, 568, 576, 568, 576, 564, 580, 564, 576, 568, 576, 564, 580, 564, 596, 548, 596, 544, 600, 544, 600, 544, 600, 540, 600, 544, 600, 544, 600, 540, 604, 540, 604, 536, 608, 536, 608, 536, 604, 536, 608, 536, 608, 532, 612, 532, 608, 536, 608, 532, 632, 512, 628, 512, 632, 512, 632, 512, 632, 508, 632, 512, 632, 512, 632, 508, 632, 512, 632, 512, 632, 512, 632, 512, 632, 508, 636, 512, 628, 512, 632, 512, 636, 508, 632, 512, 632, 512, 632, 512, 632, 508, 632, 512, 632, 512, 632, 508, 636, 508, 1672, 512, 632, 512, 1696, 488, 656, 484, 660, 484, 1700, 484, 656, 484, 660, 484,
-  ] },
-];
-export const getSalasData = () => {
-  return salas;
+  location: string | null;
+  brand_model: string | null;
+  created_at: string;
+
+  current_status: string | null;
+  current_temperatura: number | null;
+  current_modo: string | null;
+  current_ventilacao: string | null;
+  last_updated_at: string | null;
 }
 
-export const addSala = (dadosNovaSala: {name: string, temperatura: number}) => {
-    const novoId = salas.length > 0 ? Math.max(...salas.map(s => s.id)) + 1 : 1;
-
-    const novaSala: Sala = {
-        id: novoId,
-        name: dadosNovaSala.name,
-        temperatura: dadosNovaSala.temperatura,
-        status: 'fechado',
-        raw: []
-    };
-    salas.push(novaSala);
-    return novaSala;
+export interface CodigoRaw {
+  id: number;
+  unidade_id: number;
+  description: string;
+  raw_code: string;
+  config_temperatura?: number;
+  config_modo?: string;
+  config_ventilacao?: string;
 }
+
+// --- Novas funções de acesso aos dados ---
+
+// Função para buscar TODAS as unidades de AC (sem os códigos)
+export const getUnidadesAC = async (): Promise<UnidadeAC[]> => {
+  const { rows } = await db.query<UnidadeAC>(
+    "SELECT * FROM unidades_ac ORDER BY id;"
+  );
+  return rows;
+};
+
+// Função para buscar UMA unidade de AC e TODOS os seus códigos associados
+export const getUnidadeComCodigos = async (
+  id: number
+): Promise<{ unidade: UnidadeAC; codigos: CodigoRaw[] } | null> => {
+  const unidadeResult = await db.query<UnidadeAC>(
+    "SELECT * FROM unidades_ac WHERE id = $1;",
+    [id]
+  );
+
+  if (unidadeResult.rows.length === 0) {
+    return null; // Não encontrou a unidade
+  }
+
+  const codigosResult = await db.query<CodigoRaw>(
+    "SELECT * FROM codigos_raw WHERE unidade_id = $1 ORDER BY description;",
+    [id]
+  );
+
+  return {
+    unidade: unidadeResult.rows[0],
+    codigos: codigosResult.rows,
+  };
+};
+
+// Função para adicionar um NOVO CÓDIGO a uma unidade de AC existente
+export const addCodigoRaw = async (
+  unidadeId: number,
+  dadosCodigo: Omit<CodigoRaw, "id" | "unidade_id">
+) => {
+  const {
+    description,
+    raw_code,
+    config_temperatura,
+    config_modo,
+    config_ventilacao,
+  } = dadosCodigo;
+
+  await db.query(
+    `INSERT INTO codigos_raw (unidade_id, description, raw_code, config_temperatura, config_modo, config_ventilacao)
+     VALUES ($1, $2, $3, $4, $5, $6);`,
+    [
+      unidadeId,
+      description,
+      raw_code,
+      config_temperatura,
+      config_modo,
+      config_ventilacao,
+    ]
+  );
+};
+
+type NovaUnidadeAC = {
+  name: string;
+  location: string | null;
+  brand_model: string | null;
+};
+
+// A função para adicionar uma nova UNIDADE DE AC (sem códigos)
+export const addUnidadeAC = async (dadosUnidade: NovaUnidadeAC) => {
+  const { name, location, brand_model } = dadosUnidade;
+  try {
+    await db.query(
+      "INSERT INTO unidades_ac (name, location, brand_model) VALUES ($1, $2, $3);",
+      [name, location, brand_model]
+    );
+  } catch (error) {
+    console.error("Erro ao adicionar nova unidade de AC:", error);
+    throw new Error("Falha ao criar nova unidade de AC.");
+  }
+};
+
+export const updateUnidadeACState = async (
+  unidadeId: number,
+  novoEstado: {
+    status: string;
+    temperatura: number;
+    modo: string;
+    ventilacao: string;
+  }
+) => {
+  const { status, temperatura, modo, ventilacao } = novoEstado;
+
+  try {
+    await db.query(
+      `UPDATE unidades_ac 
+       SET 
+         current_status = $1, 
+         current_temperatura = $2, 
+         current_modo = $3, 
+         current_ventilacao = $4,
+         last_updated_at = NOW()
+       WHERE id = $5;`,
+      [status, temperatura, modo, ventilacao, unidadeId]
+    );
+  } catch (error) {
+    console.error("Erro ao atualizar o estado da unidade:", error);
+    throw new Error("Falha ao atualizar o estado.");
+  }
+};
