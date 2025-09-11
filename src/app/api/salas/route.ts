@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { getUnidadesAC, addUnidadeAC } from "@/lib/data";
+import { getUnidadesComEstadoECodigo, addUnidadeAC } from "@/lib/data";
 
 // --- GET: Listar todas as unidades ---
 export async function GET() {
   // A busca no banco é assíncrona, então usamos await
-  const unidades = await getUnidadesAC();
+  const unidades = await getUnidadesComEstadoECodigo();
   return NextResponse.json(unidades);
 }
 
@@ -37,3 +37,4 @@ export async function POST(request: Request) {
     );
   }
 }
+
