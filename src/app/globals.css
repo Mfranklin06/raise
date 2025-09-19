@@ -1,26 +1,179 @@
-@import "tailwindcss";
+/* --------------------------------------------------------------------
+   Tokens de cor — Paleta: pretos / brancos / cinzas / verdes (tons escuros)
+   Cole este bloco NO TOPO do globals.css (antes de @tailwind / @import)
+   -------------------------------------------------------------------- */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* medidas / fontes (mantive a sua referência) */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --radius: 0.625rem;
+
+  /* Neutros / Background (tema "light" neutro-escuro) */
+  --background: #eaf7f1;        /* fundo geral (um preto azulado suave) */
+  --foreground: #0b1213;         /* texto principal (quase branco esverdeado) */
+  --card:#eaf7f1;          /* superfície de cards (um pouco mais claro que background) */
+  --card-foreground:#0f1617;
+  --popover: #eaf7f1;
+  --popover-foreground: #0f1617;
+
+  /* Verde (accent) */
+  --primary: #0e8b5a;            /* verde escuro — cor principal */
+  --primary-foreground: #eaf7f1; /* texto sobre primary (claro) */
+  --primary-strong: #34d399;     /* verde claro para destaque (botões/CTA) */
+
+  /* Auxiliares / secundárias */
+  --secondary: #1f2933;          /* cinza escuro para elementos secundários */
+  --secondary-foreground: #cfeee3;
+
+  /* Muted / bordas / inputs */
+  --muted: #0b0f11;
+  --muted-foreground: #94a3b8;
+  --border: #102027;
+  --input: #0f1720;
+  --ring: #2dd4bf;
+
+  /* Destructive */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Chart / auxiliares de destaque */
+  --chart-1: #16a34a;
+  --chart-2: #06b6d4;
+  --chart-3: #10b981;
+  --chart-4: #f59e0b;
+  --chart-5: #f97316;
+
+  /* Sidebar tokens (light-ish values mirroring o theme acima) */
+  --sidebar: #0f1617;
+  --sidebar-foreground: #eaf7f1;
+  --sidebar-primary: #0e8b5a;
+  --sidebar-primary-foreground: #eaf7f1;
+  --sidebar-accent: #34d399;
+  --sidebar-accent-foreground: #041014;
+  --sidebar-border: #102027;
+  --sidebar-ring: #2dd4bf;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* DARK (overrides quando .dark está presente no <html>) */
+.dark {
+  --header-height: 64px;
+
+  /* mantém o dark bem escuro */
+  --background: #071012;         /* fundo quase preto azulado — muito escuro */
+  --foreground: #eaf7f1;         /* texto claro */
+  --card: #0b1213;               /* cards escuros */
+  --card-foreground: #eaf7f1;
+  --popover: #0b1213;
+  --popover-foreground: #eaf7f1;
+
+  /* verdes: destacar com um tom mais vivo no dark */
+  --primary: #34d399;            /* verde mais claro para destaque no dark */
+  --primary-foreground: #041014; /* texto escuro sobre o verde claro */
+  --primary-strong: #86efac;     /* verde ainda mais claro para micro-destaques */
+
+  --secondary: #0e8b5a;
+  --secondary-foreground: #eaf7f1;
+
+  --muted: #071012;
+  --muted-foreground: #94a3b8;
+  --border: #0f1720;
+  --input: #071012;
+  --ring: #2dd4bf;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --chart-1: #10b981;
+  --chart-2: #06b6d4;
+  --chart-3: #059669;
+  --chart-4: #f59e0b;
+  --chart-5: #f97316;
+
+  --sidebar: #071012;
+  --sidebar-foreground: #eaf7f1;
+  --sidebar-primary: #34d399;
+  --sidebar-primary-foreground: #041014;
+  --sidebar-accent: #0e8b5a;
+  --sidebar-accent-foreground: #041014;
+  --sidebar-border: #0f1720;
+  --sidebar-ring: #2dd4bf;
+}
+
+/* Mantém seu bloco @theme inline (não alterei), apenas referencia as variáveis acima */
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--primary-strong);
+  --color-accent-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant light (&:is(.light *));
+
+.backdrop-blur-sm {
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+html, body, #__next{
+  height: 100%;
+}
+html, body{
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  padding-top: var(--header-height);
+}
+
+.hero-gradient {
+  background: linear-gradient(180deg, rgba(27, 38, 55, 0.95) 0%, rgba(51, 72, 100, 0.9) 45%, rgba(58, 79, 105, 0.85) 100%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
