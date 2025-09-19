@@ -30,34 +30,50 @@ export interface CodigoRaw {
 
 // Função para buscar TODAS as unidades de AC (sem os códigos)
 export const getUnidadesAC = async (): Promise<UnidadeAC[]> => {
-  const { rows } = await db.query<UnidadeAC>(
-    "SELECT * FROM unidades_ac ORDER BY id;"
-  );
-  return rows;
+  try {
+    console.log("Buscando todas as unidades de AC...");
+    const { rows } = await db.query<UnidadeAC>(
+      "SELECT * FROM unidades_ac ORDER BY id;"
+    );
+    console.log("Unidades de AC encontradas:", rows);
+    return rows;
+  } catch (error) {
+    console.error("Erro em getUnidadesAC:", error);
+    return [];
+  }
 };
 
 // Função para buscar UMA unidade de AC e TODOS os seus códigos associados
 export const getUnidadeComCodigos = async (
   id: number
 ): Promise<{ unidade: UnidadeAC; codigos: CodigoRaw[] } | null> => {
-  const unidadeResult = await db.query<UnidadeAC>(
-    "SELECT * FROM unidades_ac WHERE id = $1;",
-    [id]
-  );
+  try {
+    console.log(`Buscando unidade com ID: ${id}`);
+    const unidadeResult = await db.query<UnidadeAC>(
+      "SELECT * FROM unidades_ac WHERE id = $1;",
+      [id]
+    );
+    console.log("Resultado da busca da unidade:", unidadeResult.rows);
 
-  if (unidadeResult.rows.length === 0) {
-    return null; // Não encontrou a unidade
+    if (unidadeResult.rows.length === 0) {
+      console.log("Unidade não encontrada.");
+      return null; // Não encontrou a unidade
+    }
+
+    const codigosResult = await db.query<CodigoRaw>(
+      "SELECT * FROM codigos_raw WHERE unidade_id = $1 ORDER BY description;",
+      [id]
+    );
+    console.log("Resultado da busca dos códigos:", codigosResult.rows);
+
+    return {
+      unidade: unidadeResult.rows[0],
+      codigos: codigosResult.rows,
+    };
+  } catch (error) {
+    console.error("Erro em getUnidadeComCodigos:", error);
+    return null;
   }
-
-  const codigosResult = await db.query<CodigoRaw>(
-    "SELECT * FROM codigos_raw WHERE unidade_id = $1 ORDER BY description;",
-    [id]
-  );
-
-  return {
-    unidade: unidadeResult.rows[0],
-    codigos: codigosResult.rows,
-  };
 };
 
 // Função para adicionar um NOVO CÓDIGO a uma unidade de AC existente
