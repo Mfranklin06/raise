@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import ThemeRegistry from "./components/themeRegistry";
+import { ThemeProvider as NextThemeProvider } from "next-themes";
+import './globals.css'
 
 export const metadata: Metadata = {
   title: "RAISE",
@@ -13,12 +14,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col">
         <main className="flex-1">
-          <ThemeRegistry>
-            {children}
-          </ThemeRegistry>
+          <NextThemeProvider attribute={"class"} defaultTheme="dark" enableSystem={false}>
+            <ThemeRegistry>
+              {children}
+            </ThemeRegistry>
+          </NextThemeProvider>
         </main>
       </body>
     </html>
