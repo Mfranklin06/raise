@@ -1,35 +1,38 @@
-// src/app/page.tsx
+import { getUnidadesAC, UnidadeAC } from "@/lib/data";
+import Header from "../components/Header";
+import SalasCards from "../components/SalasCards";
+import { Suspense } from "react";
 
-import { Poppins } from 'next/font/google';
-import SalasCards from "../components/ui/SalasCards";
-// Importamos a nova função que busca dados do banco
-import { getUnidadesAC, UnidadeAC } from '@/lib/data'; 
-
-const poppins = Poppins({
-  weight: ['400'],
-  subsets: ['latin'],
-});
-
-// A função agora é async, pois a consulta ao banco de dados leva um tempo.
-async function getUnidades(): Promise<UnidadeAC[]> {
-  const unidades = await getUnidadesAC();
-  return unidades;
+function LoadingRooms() {
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse bg-muted/20 h-80 rounded-lg" aria-label="Loading room data">
+                    <div className="h-full flex items-center justify-center">
+                        <div className="text-muted-foreground">Carregando sala...</div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
 }
 
-export default async function Home() {
-  // Usamos 'await' para esperar a resposta do banco de dados.
-  const unidades = await getUnidades();
+async function getUnidades(): Promise<UnidadeAC[]> {
+    const unidades = await getUnidadesAC();
+    return unidades;
+}
 
-  return (
-    <main>
-      <h1 className={`${poppins.className} bg-[#0e0c26]  text-white text-center justify-center pt-20 text-4xl`}>
-        Unidades Disponíveis
-      </h1>
-      {/* IMPORTANTE: O componente SalasCards agora receberá um array de 'UnidadeAC'.
-        Você precisará atualizar o componente SalasCards para ler as novas propriedades,
-        como 'unidade.name', 'unidade.location', 'unidade.current_temperatura', etc.
-      */}
-      <SalasCards unidades={unidades} />
-    </main>
-  );
+
+export default async function Salas() {
+    const unidades = await getUnidades();
+    return (
+        <main className="min-h-screen bg-background">
+            <header>
+                <Header />
+            </header>
+            <Suspense fallback={<LoadingRooms />}>
+                <SalasCards unidades={unidades} />
+            </Suspense>
+        </main>
+    );
 }
