@@ -37,7 +37,7 @@ export default function HeroSection() {
                 </Typography>
               </div>
 
-              <Typography variant="body1" className="text-lg sm:text-xl text-white max-w-xl">
+              <Typography variant="body1" className="text-lg sm:text-xl text-foreground max-w-xl">
                 Gerencie seus sistemas de climatização com foco em sustentabilidade, economia de energia e
                 controle inteligente de última geração.
               </Typography>
@@ -47,13 +47,14 @@ export default function HeroSection() {
                   component={Link}
                   href="/salas"
                   variant="outlined"
-                  className=" text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="text-foreground px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                   sx={{
-                    borderColor: "#388E3C", 
-                    "&:hover":{backgroundColor:"#0",
-                      color: "#388e3c"
+                    borderColor: "var(--border)", 
+                    "&:hover":{
+                      backgroundColor:"var(--primary)",
+                      color: "var(--muted)"
                     }, 
-                    color:"#FFFFFF"
+                    color: "var(--primary-strong)"
                   }}
                 >
                   Acessar Salas
@@ -65,11 +66,12 @@ export default function HeroSection() {
                   variant="outlined"
                   className="px-6 py-3 rounded-lg transition-all duration-300"
                   sx={{
-                    borderColor: "#388E3C", 
+                    borderColor: "var(--border)", 
                     "&:hover":{
-                      color: "#388e3c"
+                      backgroundColor:"var(--primary)",
+                      color: "var(--muted)"
                     }, 
-                    color:"#FFFFFF"
+                    color: "var(--primary-strong)"
                   }}
                 >
                   Ver Relatórios
