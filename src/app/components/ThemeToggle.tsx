@@ -26,7 +26,7 @@ export default function ThemeToggle() {
             aria-hidden
             disabled
             size="small"
-            className="bg-white/6 dark:bg-black/10 rounded-md p-2"
+            className="bg-backround/6 rounded-md p-2"
           >
             <div className="h-5 w-5" />
           </IconButton>
@@ -48,7 +48,7 @@ export default function ThemeToggle() {
         aria-label="Alternar tema"
         aria-pressed={isDark}
         size="small"
-        className="bg-white/6 hover:bg-white/10 dark:bg-black/10 dark:hover:bg-black/20 rounded-md p-2 transition-transform duration-200 shadow-sm"
+        className="bg-background/6 hover:bg-background/10 rounded-md p-2 transition-transform duration-200 shadow-sm"
         >
         <span
           className={`inline-block transform transition-all duration-300 ${
@@ -58,7 +58,7 @@ export default function ThemeToggle() {
           {isDark ? (
             <SunIcon className="h-5 w-5 text-yellow-400" aria-hidden />
           ) : (
-            <MoonIcon className="h-5 w-5 text-gray-900 dark:text-gray-100" aria-hidden />
+            <MoonIcon className="h-5 w-5 text-foreground/80" aria-hidden />
           )}
         </span>
       </IconButton>
