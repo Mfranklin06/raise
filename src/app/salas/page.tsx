@@ -1,5 +1,4 @@
 import { getUnidadesAC, UnidadeAC } from "@/lib/data";
-import Header from "../components/Header";
 import SalasCards from "../components/SalasCards";
 import { Suspense } from "react";
 
@@ -27,9 +26,6 @@ export default async function Salas() {
     const unidades = await getUnidades();
     return (
         <main className="min-h-screen bg-background">
-            <header>
-                <Header />
-            </header>
             <Suspense fallback={<LoadingRooms />}>
                 <SalasCards unidades={unidades} />
             </Suspense>
