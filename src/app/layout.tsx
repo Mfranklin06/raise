@@ -3,6 +3,7 @@ import ThemeRegistry from "./components/themeRegistry";
 import { ThemeProvider as NextThemeProvider } from "next-themes";
 import './globals.css'
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export const metadata: Metadata = {
   title: "RAISE",
@@ -24,6 +25,7 @@ export default function RootLayout({
               {children}
             </ThemeRegistry>
           </main>
+          <Footer />
         </NextThemeProvider>
       </body>
     </html>
