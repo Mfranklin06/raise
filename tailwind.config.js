@@ -16,9 +16,13 @@ module.exports = {
         border: "var(--border)",
         primary: {
           DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)"
-      },
-        secondary: "var(--secondary)"
+          foreground: "var(--primary-foreground)",
+          strong: "var(--primary-strong)"
+        },
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)"
+        },
       },
       borderRadius: { lg: "var(--radius)" }
     }
