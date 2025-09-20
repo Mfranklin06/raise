@@ -6,23 +6,23 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="bg-primary py-12 text-white mt-12">
+    <footer className="bg-secondary py-12 text-secondary-foreground">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <Link href="/" className="inline-block">
               <h4 className="text-xl font-bold">RAISE</h4>
             </Link>
-            <div className="h-1 w-12 bg-white mt-2 mb-4" />
+            <div className="h-[0.1rem] w-12 bg-muted-foreground mt-1 mb-4" />
             <p className="text-sm opacity-90">Automação institucional inteligente para os Institutos Federais.</p>
           </div>
 
           <div>
             <h5 className="font-semibold mb-3">Navegação</h5>
             <ul className="space-y-2 text-sm opacity-90">
-              <li><a href="#home">Home</a></li>
-              <li><a href="#features">Recursos</a></li>
-              <li><a href="#about">Sobre</a></li>
+              <li><Link href="/#home">Home</Link></li>
+              <li><Link href="/#features">Recursos</Link></li>
+              <li><Link href="/#about">Sobre</Link></li>
             </ul>
           </div>
 
@@ -38,9 +38,9 @@ export default function Footer() {
           <div>
             <h5 className="font-semibold mb-3">Contato</h5>
             <div className="flex items-center gap-4">
-              <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">🐙</a>
-              <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">in</a>
-              <a href="mailto:contato@ecocontrol-system.com.br" aria-label="Email">✉️</a>
+              <Link href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">🐙</Link>
+              <Link href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">in</Link>
+              <Link href="mailto:contato@ecocontrol-system.com.br" aria-label="Email">✉️</Link>
             </div>
           </div>
         </div>
