@@ -11,23 +11,23 @@ export default function Header() {
   return (
     <>
       {/* HEADER: fixed, altura fixa, z acima do painel */}
-      <header className="fixed inset-x-0 top-0 z-50 h-[4rem] backdrop-blur-sm bg-background/30 border-b">
+      <div className="fixed inset-x-0 top-0 z-50 h-[4rem] backdrop-blur-sm bg-background/30 border-b">
         <div className="mx-auto max-w-7xl px-6 lg:px-12 h-full flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-4">
-            <Link href="/" className="flex flex-col items-center gap-1.5 hover:text-green-700">
-              <span className="text-lg font-extrabold text-foreground hover:text-green-700">RAISE</span>
-              <span className="hidden sm:block h-1 w-20 bg-foreground/85 rounded " />
+          <div className="group flex items-center gap-4">
+            <Link href="/" className="flex flex-col items-center gap-1.5">
+              <span className="text-lg font-extrabold text-foreground group-hover:text-primary">RAISE</span>
+              <span className="hidden sm:block h-1 w-20 bg-foreground/85 rounded group-hover:bg-primary" />
             </Link>
           </div>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/#home" className="text-sm text-foreground hover:opacity-90 hover:text-green-700">Início</Link>
-            <Link href="/#features" className="text-sm text-foreground hover:opacity-90 hover:text-green-700">Recursos</Link>
-            <Link href="/#about" className="text-sm text-foreground hover:opacity-90 hover:text-green-700">Sobre</Link>
-            <Link href="/salas" className="text-sm text-foreground hover:opacity-90 hover:text-green-700">Salas</Link>
-            <Link href="/relatorios" className="text-sm text-foreground hover:opacity-90 hover:text-green-700">Relatórios</Link>
+            <Link href="/#home" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Início</Link>
+            <Link href="/#features" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Recursos</Link>
+            <Link href="/#about" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Sobre</Link>
+            <Link href="/salas" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Salas</Link>
+            <Link href="/relatorios" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Relatórios</Link>
             <ThemeToggle />
           </nav>
 
@@ -43,7 +43,7 @@ export default function Header() {
             </button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* MOBILE PANEL: fora do header (irmão). top = header height (4rem) */}
       <div
@@ -56,9 +56,9 @@ export default function Header() {
         {/* Use um fundo translúcido suave em vez de preto opaco */}
         <div className="backdrop-blur-sm bg-background border-t px-6 py-6 shadow-lg max-h-[calc(100vh-4rem)] overflow-auto">
           <div className="flex flex-col gap-4">
-            <a href="#home" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Início</a>
-            <a href="#features" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Recursos</a>
-            <a href="#about" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Sobre</a>
+            <Link href="/#home" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Início</Link>
+            <Link href="/#features" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Recursos</Link>
+            <Link href="/#about" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Sobre</Link>
             <Link href="/salas" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Salas</Link>
             <Link href="/relatorios" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Relatórios</Link>
           </div>
