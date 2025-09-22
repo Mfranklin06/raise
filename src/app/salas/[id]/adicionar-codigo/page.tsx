@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { getUnidadeComCodigos } from "@/lib/data";
-import { addCodigoRawAction } from "../../actions"; // Criaremos esta Action a seguir
+import { addCodigoRawAction } from "../../../actions"; // Criaremos esta Action a seguir
 
 // A página recebe 'params' que contém o 'id' da URL
 export default async function AdicionarCodigoPage({ params }: { params: { id: string } }) {
