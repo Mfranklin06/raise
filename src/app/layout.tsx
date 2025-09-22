@@ -19,13 +19,17 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col">
         <NextThemeProvider attribute={"class"} defaultTheme="dark" enableSystem={false}>
-          <Header />
+          <header>
+            <Header />
+          </header>
           <main className="flex-1">
             <ThemeRegistry>
               {children}
             </ThemeRegistry>
           </main>
-          <Footer />
+          <footer>
+            <Footer />
+          </footer>
         </NextThemeProvider>
       </body>
     </html>

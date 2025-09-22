@@ -12,7 +12,7 @@
   --card-foreground: #1A202C;      /* Texto nos cards. */
   --popover: #FFFFFF;              /* Fundo de popovers. */
   --popover-foreground: #1A202C;   /* Texto nos popovers. */
-
+  
   --primary: #6B9E93;              /* Verde sálvia/menta, dessaturado e tecnológico. */
   --primary-foreground: #FFFFFF;   /* Texto sobre a cor primária (branco). */
   --primary-strong: #4CAF9A;       /* Verde mais vivo para botões de ação (CTA) e hovers. */
