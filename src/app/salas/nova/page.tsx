@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { criarSalaAction } from "../actions";
+import { criarSalaAction } from "../../actions";
 
 export default function NovaSalaPage() {
     return (
