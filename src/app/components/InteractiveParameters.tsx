@@ -48,9 +48,17 @@ export function InteractiveParameterControl({
                             onClick={() => onChangeAction(Math.max(min, numericValue - step))}
                             disabled={numericValue == min}
                             className="h-8 w-8 p-0"
-                            sx={{ borderColor: "#388E3C", color: "#388E3C" }}
+                            sx={{
+                                borderColor: "var(--card)",
+                                color: "var(--primary)",
+                                "&:hover": {
+                                    backgroundColor: "var(--primary)",
+                                    borderColor: "var(--primary)",
+                                    color: "var(--card)"
+                                }
+                            }}
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" >
                                 <MinusIcon strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
                             </svg>
                         </Button>
@@ -68,9 +76,17 @@ export function InteractiveParameterControl({
                             onClick={() => onChangeAction(Math.min(max, numericValue + step))}
                             disabled={numericValue == max}
                             className="h-8 w-8 p-0"
-                            sx={{ borderColor: "#388E3C", color: "#388E3C" }}
+                            sx={{
+                                borderColor: "var(--card)",
+                                color: "var(--primary)",
+                                "&:hover": {
+                                    backgroundColor: "var(--primary)",
+                                    borderColor: "var(--primary)",
+                                    color: "var(--card)"
+                                }
+                            }}
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" >
                                 <PlusIcon strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
                             </svg>
                         </Button>
@@ -85,8 +101,19 @@ export function InteractiveParameterControl({
                         marks
                         min={min}
                         max={max}
-                        sx={{ color: "#2ba03e" }}
+                        className="parameter-slider"
+                        sx={{ color: "var(--primary)" }}
                     />
+                    <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                        <span>
+                            {min}
+                            {unit}
+                        </span>
+                        <span>
+                            {max}
+                            {unit}
+                        </span>
+                    </div>
                 </div>
             </div>
         )
@@ -124,9 +151,17 @@ export function InteractiveParameterControl({
                             onClick={handlePrevious}
                             disabled={currentIndex === 0}
                             className="h-8 w-8 p-0 border"
-                            sx={{ borderColor: "#388E3C", color: "#388E3C" }}
+                            sx={{
+                                borderColor: "var(--card)",
+                                color: "var(--primary)",
+                                "&:hover": {
+                                    backgroundColor: "var(--primary)",
+                                    borderColor: "var(--primary)",
+                                    color: "var(--card)"
+                                }
+                            }}
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" >
                                 <ChevronLeftIcon strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
                             </svg>
                         </Button>
@@ -137,7 +172,7 @@ export function InteractiveParameterControl({
                                 {options.map((_, index) => (
                                     <div
                                         key={index}
-                                        className={`w-2 h-2 rounded-full transition-colors ${index === currentIndex ? "bg-primary" : "bg-muted border border-green-700"
+                                        className={`w-2 h-2 rounded-full transition-colors ${index === currentIndex ? "bg-primary" : "bg-muted border border-primary"
                                             }`}
                                     />
                                 ))}
@@ -150,9 +185,17 @@ export function InteractiveParameterControl({
                             onClick={handleNext}
                             disabled={currentIndex === 3}
                             className="h-8 w-8 p-0"
-                            sx={{ borderColor: "#388E3C", color: "#388E3C" }}
+                            sx={{
+                                borderColor: "var(--card)",
+                                color: "var(--primary)",
+                                "&:hover": {
+                                    backgroundColor: "var(--primary)",
+                                    borderColor: "var(--primary)",
+                                    color: "var(--card)"
+                                }
+                            }}
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" >
                                 <ChevronRightIcon strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
                             </svg>
                         </Button>
@@ -163,71 +206,4 @@ export function InteractiveParameterControl({
     }
 
     // For numeric controls (like temperature, ventilation)
-
-    {/*return (
-        <div className="space-y-3">
-
-            <label className="text-sm font-medium text-foreground">{label}</label>
-            {unidades?.map((unidades) => (
-                <div className="interactive-control bg-card border border-border rounded-lg p-4" key={unidades.id}>
-                    <div className="flex items-center justify-between mb-3">
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={() => onChangeAction(Math.max(min, numericValue - step))}
-                            disabled={disabled || numericValue <= min}
-                            className="h-8 w-8 p-0"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                            </svg>
-                        </Button>
-
-                        <div className="text-center">
-                            <div className="text-2xl font-bold text-foreground">
-                                {numericValue}
-                                {unit}
-                            </div>
-                        </div>
-
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={() => onChangeAction(Math.min(max, numericValue + step))}
-                            disabled={disabled || numericValue >= max}
-                            className="h-8 w-8 p-0"
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
-                        </Button>
-                    </div>
-
-                    <Slider
-                        aria-label="Temperature"
-                        defaultValue={unidades.current_temperatura ? unidades.current_temperatura : 20}
-                        getAriaValueText={(value) => `${value}${unit}`}
-                        valueLabelDisplay="auto"
-                        shiftStep={3}
-                        step={1}
-                        marks
-                        min={17}
-                        max={25}
-                    />
-
-                    <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                        <span>
-                            {min}
-                            {unit}
-                        </span>
-                        <span>
-                            {max}
-                            {unit}
-                        </span>
-                    </div>
-                </div>
-            ))}
-
-        </div>
-    )*/}
 }
