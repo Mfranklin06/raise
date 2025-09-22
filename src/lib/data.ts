@@ -123,34 +123,84 @@ export const addUnidadeAC = async (dadosUnidade: NovaUnidadeAC) => {
   }
 };
 
-export const updateUnidadeACState = async (
-  unidadeId: number,
-  novoEstado: {
-    status: string;
-    temperatura: number | null;
-    modo: string | null;
-    ventilacao: string | null;
+
+
+export async function updateUnidadeACState(
+  unidadeId: string | number,
+  updates: Record<string, unknown>
+): Promise<UnidadeAC> {
+  // aliases: ordem representa prioridade (primeiro ganha)
+  const aliases: Record<string, string[]> = {
+    current_temperatura: ['current_temperatura', 'temperatura', 'temp'],
+    current_modo: ['current_modo', 'modo'],
+    current_ventilacao: ['current_ventilacao', 'ventilacao', 'vent'],
+    current_status: ['current_status', 'status'],
+  };
+
+  // --- 1) Normalizar: criar objeto com chaves canônicas sem duplicatas ---
+  const normalized: Record<string, unknown> = {};
+  for (const canonical of Object.keys(aliases)) {
+    for (const a of aliases[canonical]) {
+      if (Object.prototype.hasOwnProperty.call(updates, a)) {
+        normalized[canonical] = updates[a as keyof typeof updates];
+        break;
+      }
+    }
   }
-) => {
-  const { status, temperatura, modo, ventilacao } = novoEstado;
+
+  // --- 2) Derivar current_status a partir de current_modo (SE houver modo) ---
+  if (normalized.current_modo !== undefined && normalized.current_modo !== null) {
+    const modoStr = String(normalized.current_modo).trim().toLowerCase();
+    normalized.current_status = modoStr === 'off' ? 'desligado' : 'ligado';
+    normalized.current_modo = modoStr === 'off' ? 'desligado' : normalized.current_modo;
+    normalized.current_temperatura = modoStr === 'off' ? null : normalized.current_temperatura;
+    normalized.current_ventilacao = modoStr === 'off' ? null : normalized.current_ventilacao;
+  }
+
+  // --- 3) Monta colunas e valores (garantindo unicidade das colunas) ---
+  const fieldToColumn: Record<string, string> = {
+    current_temperatura: 'current_temperatura',
+    current_modo: 'current_modo',
+    current_ventilacao: 'current_ventilacao',
+    current_status: 'current_status',
+  };
+
+  const cols: string[] = [];
+  const values: unknown[] = [];
+
+  for (const [k, v] of Object.entries(normalized)) {
+    const col = fieldToColumn[k];
+    if (!col) continue; // ignora chaves não mapeadas
+    // empurra apenas uma vez por coluna (normalized já evita duplicatas)
+    values.push(v);
+    cols.push(`${col} = $${values.length}`);
+  }
 
   try {
-    await db.query(
-      `UPDATE unidades_ac 
-       SET 
-         current_status = $1, 
-         current_temperatura = $2, 
-         current_modo = $3, 
-         current_ventilacao = $4,
-         last_updated_at = NOW()
-       WHERE id = $5;`,
-      [status, temperatura, modo, ventilacao, unidadeId]
-    );
-  } catch (error) {
-    console.error("Erro ao atualizar o estado da unidade:", error);
-    throw new Error("Falha ao atualizar o estado.");
+    if (cols.length === 0) {
+      // nada a atualizar -> retorna a linha atual
+      const select = await db.query('SELECT * FROM unidades_ac WHERE id = $1', [unidadeId]);
+      return (select.rows[0]);
+    }
+
+    // adiciona last_updated_at
+    const setClause = cols.join(', ') + ', last_updated_at = NOW()';
+    const idPlaceholder = values.length + 1;
+    const sql = `UPDATE unidades_ac SET ${setClause} WHERE id = $${idPlaceholder} RETURNING *;`;
+    values.push(unidadeId);
+
+    console.log('[DATA] update SQL:', sql, 'values:', values); // opcional para debug
+    const res = await db.query(sql, values);
+
+    const updated = res.rows?.[0];
+    if (!updated) throw new Error('Unidade não encontrada após UPDATE.');
+    return updated as UnidadeAC;
+  } catch (err) {
+    console.error('[DATA] updateUnidadeACState error:', err);
+    throw err;
   }
-};
+}
+
 
 export const getUnidadesComEstadoECodigo = async () => {
   try {
@@ -180,13 +230,12 @@ export const getUnidadesComEstadoECodigo = async () => {
       ORDER BY
         ua.id;
     `);
-    
+
     // A consulta agora retorna todas as unidades, com 'current_raw_code' preenchido ou nulo.
     return rows;
-
   } catch (error) {
-    console.error('Erro ao buscar unidades com estado e código:', error);
-    throw new Error('Falha ao buscar dados das unidades.');
+    console.error("Erro ao buscar unidades com estado e código:", error);
+    throw new Error("Falha ao buscar dados das unidades.");
   }
 };
 
@@ -215,9 +264,8 @@ export const findRawCodeForState = async (
     if (rows.length > 0) {
       return rows[0].raw_code as string;
     }
-    
+
     return null; // Retorna null se nenhum código for encontrado para essa combinação
-  
   } catch (error) {
     console.error("Erro ao buscar código raw:", error);
     return null;
