@@ -16,11 +16,13 @@ interface SalaProps {
 
 export default async function Sala(u: SalaProps) {
     const unidades = await getUnidade(u.params);
-    
+
     // The component now receives the correctly typed action.
     return (
-        <div>
-            <SalaCards unidade={unidades} updateAction={updateEstadoAction}/>
-        </div>
+        <main className="min-h-screen bg-background">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-[5rem]">
+                <SalaCards unidade={unidades} updateAction={updateEstadoAction} />
+            </div>
+        </main>
     );
 }
