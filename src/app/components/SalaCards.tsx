@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { InteractiveParameterControl } from "./InteractiveParameters";
-import { Card, CardContent, CardHeader } from "@mui/material";
+import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import { UnidadeAC } from "@/lib/data";
 import { BoltIcon, ChartBarIcon, CogIcon } from "@heroicons/react/24/solid";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
@@ -231,7 +231,7 @@ export default function SalaCard({
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <button
+            <Button
               onClick={() => {
                 updateParameter(u.id.toString(), "current_modo", "auto");
                 updateParameter(u.id.toString(), "current_temperatura", 22);
@@ -241,9 +241,9 @@ export default function SalaCard({
               className="w-full p-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Modo Eco
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={() => {
                 updateParameter(u.id.toString(), "current_modo", "cool");
                 updateParameter(u.id.toString(), "current_temperatura", 20);
@@ -253,9 +253,9 @@ export default function SalaCard({
               className="w-full p-2 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Resfriamento Rápido
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={() => {
                 updateParameter(u.id.toString(), "current_modo", "off");
               }}
@@ -263,20 +263,20 @@ export default function SalaCard({
               className="w-full p-2 text-sm bg-destructive text-destructive-foreground rounded-md hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Desligar Tudo
-            </button>
+            </Button>
           </CardContent>
         </Card>
       </div>
 
       {/* Botões de ação — salvar / ativar */}
       <div className="flex gap-2">
-        <button onClick={() => sendUpdate(u.id.toString())} className="btn">
+        <Button onClick={() => sendUpdate(u.id.toString())} variant="outlined" disabled={!pendingChanges[u.id.toString()] || isUpdating[u.id.toString()]}>
           {isUpdating[u.id.toString()] ? "Salvando..." : "Salvar mudanças"}
-        </button>
+        </Button>
 
-        <button onClick={() => sendInitialActivation(u.id.toString())} className="btn-outline">
+        <Button onClick={() => sendInitialActivation(u.id.toString())} variant="outlined" disabled={u.current_status !== "desligado"}>
           {isUpdating[u.id.toString()] ? "Aguardando..." : "Ativar Unidade"}
-        </button>
+        </Button>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
