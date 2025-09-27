@@ -1,7 +1,5 @@
-// src/lib/data.ts
 import { db } from "@vercel/postgres";
 
-// --- Interfaces para os novos formatos ---
 export interface UnidadeAC {
   id: number;
   name: string;
@@ -26,9 +24,6 @@ export interface CodigoRaw {
   config_ventilacao?: string;
 }
 
-// --- Novas funções de acesso aos dados ---
-
-// Função para buscar TODAS as unidades de AC (sem os códigos)
 export const getUnidadesAC = async (): Promise<UnidadeAC[]> => {
   try {
     console.log("Buscando todas as unidades de AC...");
@@ -43,7 +38,6 @@ export const getUnidadesAC = async (): Promise<UnidadeAC[]> => {
   }
 };
 
-// Função para buscar UMA unidade de AC e TODOS os seus códigos associados
 export const getUnidadeComCodigos = async (
   id: number
 ): Promise<{ unidade: UnidadeAC; codigos: CodigoRaw[] } | null> => {
@@ -76,7 +70,6 @@ export const getUnidadeComCodigos = async (
   }
 };
 
-// Função para adicionar um NOVO CÓDIGO a uma unidade de AC existente
 export const addCodigoRaw = async (
   unidadeId: number,
   dadosCodigo: Omit<CodigoRaw, "id" | "unidade_id">
@@ -109,7 +102,6 @@ type NovaUnidadeAC = {
   brand_model: string | null;
 };
 
-// A função para adicionar uma nova UNIDADE DE AC (sem códigos)
 export const addUnidadeAC = async (dadosUnidade: NovaUnidadeAC) => {
   const { name, location, brand_model } = dadosUnidade;
   try {
@@ -204,7 +196,7 @@ export async function updateUnidadeACState(
 
 export const getUnidadesComEstadoECodigo = async () => {
   try {
-    // Esta consulta única e correta faz todo o trabalho no banco de dados.
+    
     const { rows } = await db.query(`
       SELECT
         ua.*, -- Pega todas as colunas da tabela de unidades
@@ -231,7 +223,7 @@ export const getUnidadesComEstadoECodigo = async () => {
         ua.id;
     `);
 
-    // A consulta agora retorna todas as unidades, com 'current_raw_code' preenchido ou nulo.
+    
     return rows;
   } catch (error) {
     console.error("Erro ao buscar unidades com estado e código:", error);
@@ -257,7 +249,7 @@ export const findRawCodeForState = async (
          AND config_modo IS NOT DISTINCT FROM $2
          AND config_temperatura IS NOT DISTINCT FROM $3
          AND config_ventilacao IS NOT DISTINCT FROM $4
-       LIMIT 1;`, // LIMIT 1 para garantir que pegamos apenas um resultado
+       LIMIT 1;`, 
       [unidadeId, modo, temperatura, ventilacao]
     );
 
@@ -265,9 +257,29 @@ export const findRawCodeForState = async (
       return rows[0].raw_code as string;
     }
 
-    return null; // Retorna null se nenhum código for encontrado para essa combinação
+    return null; 
   } catch (error) {
     console.error("Erro ao buscar código raw:", error);
+    return null;
+  }
+};
+
+export const findUnidadeACById = async (
+  unidadeId: string
+): Promise<UnidadeAC | null> => {
+  try {
+    const { rows } = await db.query(
+      `SELECT * FROM unidades_ac WHERE id = $1 LIMIT 1;`,
+      [unidadeId]
+    );
+
+    if (rows.length > 0) {
+      return rows[0] as UnidadeAC;
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Erro ao buscar unidade de AC por ID:", error);
     return null;
   }
 };
