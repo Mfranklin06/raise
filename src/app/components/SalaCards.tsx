@@ -6,18 +6,14 @@ import { Button, Card, CardContent, CardHeader } from "@mui/material";
 import { UnidadeAC } from "@/lib/data";
 import { BoltIcon, ChartBarIcon, CogIcon } from "@heroicons/react/24/solid";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-//import { Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 
-//const poppins = Poppins({ weight: ["400"], subsets: ["latin"] });
+const poppins = Poppins({ weight: ["400"], subsets: ["latin"] });
 
 type PendingChange = Record<string, string | number>;
 type PendingChangesMap = Record<string, PendingChange>;
 type UpdatingMap = Record<string, boolean>;
 
-/**
- * Componente que renderiza UMA unidade.
- * Se sua action retornar UnidadeAC[] (array), o código normaliza e pega a unidade correta.
- */
 export default function SalaCard({
   unidade,
   updateAction,
@@ -100,8 +96,8 @@ export default function SalaCard({
   const u = unidadeState;
   
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-foreground">Controles de Parâmetros — {u.name}</h2>
+    <div className={`${poppins.className} space-y-6`}>
+      <h2 className={`text-2xl font-bold text-foreground`}>Controles de Parâmetros — {u.name}</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Temperatura */}
@@ -113,15 +109,15 @@ export default function SalaCard({
             }}
           >
             <div className="flex items-center gap-2">
-              <ChartBarIcon className="w-5 h-5 text-primary" />
+              <ChartBarIcon className={`w-5 h-5 text-primary`} />
               Temperatura
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className={`space-y-4`}>
               <div className="text-center">
-                <p className="text-sm text-muted-foreground">Atual</p>
-                <p className="text-2xl font-bold text-foreground">{u.current_temperatura ?? "—"}°C</p>
+                <p className={`text-sm text-muted-foreground`}>Atual</p>
+                <p className={`text-2xl font-bold text-foreground`}>{u.current_temperatura ?? "—"}°C</p>
               </div>
               <InteractiveParameterControl
                 label="Temperatura Desejada"
