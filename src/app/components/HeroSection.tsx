@@ -64,7 +64,7 @@ export default function HeroSection() {
                   component={Link}
                   href="/relatorios"
                   variant="outlined"
-                  className="px-6 py-3 rounded-lg transition-all duration-300"
+                  className="text-foreground px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
                   sx={{
                     borderColor: "var(--border)", 
                     "&:hover":{
