@@ -3,8 +3,6 @@ import SalaCards from "@/app/components/SalaCards";
 import { getUnidadesAC, UnidadeAC } from "@/lib/data";
 
 async function getUnidade(params: { id: string }): Promise<UnidadeAC> {
-    // This function fetches all units. For a real-world scenario,
-    // you might filter by the ID from params if needed.
     const unidades = await getUnidadesAC();
     return unidades.find(u => u.id === parseInt(params.id))!;
 }
