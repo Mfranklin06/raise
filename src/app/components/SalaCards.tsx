@@ -108,7 +108,9 @@ export default function SalaCard({
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Temperatura */}
-        <Card className="room-card">
+        <Card className="room-card" sx={{
+          backgroundColor: 'var(--card)'
+        }}>
           <CardHeader
             sx={{
               "& .MuiCardHeader-title": { color: "var(--foreground)", fontSize: "1.25rem", fontWeight: 600 },
@@ -141,7 +143,9 @@ export default function SalaCard({
         </Card>
 
         {/* Modo */}
-        <Card className="room-card">
+        <Card className="room-card" sx={{
+          backgroundColor: 'var(--card)'
+        }}>
           <CardHeader>
             <div className="flex items-center gap-2">
               <CogIcon className="w-5 h-5 text-primary" />
@@ -165,7 +169,9 @@ export default function SalaCard({
         </Card>
 
         {/* Ventilação */}
-        <Card className="room-card">
+        <Card className="room-card" sx={{
+          backgroundColor: 'var(--card)'
+        }}>
           <CardHeader
             sx={{
               "& .MuiCardHeader-title": { color: "var(--foreground)", fontSize: "1.25rem", fontWeight: 600 },
@@ -194,7 +200,9 @@ export default function SalaCard({
         </Card>
 
         {/* Umidade (leitura) */}
-        <Card className="room-card">
+        <Card className="room-card" sx={{
+          backgroundColor: 'var(--card)'
+        }}>
           <CardHeader>
             <div className="flex items-center gap-2">
               <BoltIcon className="w-5 h-5" />
@@ -210,7 +218,9 @@ export default function SalaCard({
         </Card>
 
         {/* Consumo */}
-        <Card className="room-card">
+        <Card className="room-card" sx={{
+          backgroundColor: 'var(--card)'
+        }}>
           <CardHeader>
             <div className="flex items-center gap-2">
               <BoltIcon className="w-5 h-5" />
@@ -226,7 +236,9 @@ export default function SalaCard({
         </Card>
 
         {/* Ações rápidas */}
-        <Card className="room-card">
+        <Card className="room-card" sx={{
+          backgroundColor: 'var(--card)'
+        }}>
           <CardHeader>
             <div className="flex items-center gap-2">
               <Cog6ToothIcon className="w-5 h-5" />
