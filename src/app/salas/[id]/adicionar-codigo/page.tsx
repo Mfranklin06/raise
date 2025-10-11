@@ -12,7 +12,7 @@ export default async function AdicionarCodigoPage({ params }: { params: { id: st
   }
 
   return (
-    <main className="flex min-w-screen min-h-screen flex-col justify-center items-center">
+    <main className="bg-background flex min-w-screen min-h-screen flex-col justify-center items-center">
       <Box className="bg-card p-8 rounded-lg shadow-md w-[40%]">
         <h1 className="text-2xl font-bold mb-4">
           Adicionar Código para: <span className="text-card-foreground">{data.unidade.name}</span>
