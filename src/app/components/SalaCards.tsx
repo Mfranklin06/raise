@@ -7,6 +7,8 @@ import { UnidadeAC } from "@/lib/data";
 import { BoltIcon, ChartBarIcon, CogIcon } from "@heroicons/react/24/solid";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { Poppins } from "next/font/google";
+import Link from "next/link";
+import { usePathname } from "next/navigation"; 
 
 const poppins = Poppins({ weight: ["400"], subsets: ["latin"] });
 
@@ -22,6 +24,8 @@ export default function SalaCard({
   // Permite que a action retorne um objeto ou um array (compatibilidade)
   updateAction: (payload: { id: string; updates: Record<string, unknown> }) => Promise<UnidadeAC | UnidadeAC[]>;
 }) {
+
+
   const [unidadeState, setUnidadeState] = useState<UnidadeAC>(unidade);
   const [pendingChanges, setPendingChanges] = useState<PendingChangesMap>({});
   const [isUpdating, setIsUpdating] = useState<UpdatingMap>({});
@@ -94,6 +98,9 @@ export default function SalaCard({
   };
 
   const u = unidadeState;
+  
+  const router = usePathname();
+  const linkDinamico = `${router}/adicionar-codigo/`
   
   return (
     <div className={`${poppins.className} space-y-6`}>
@@ -228,15 +235,11 @@ export default function SalaCard({
           </CardHeader>
           <CardContent className="space-y-3">
             <Button
-              onClick={() => {
-                updateParameter(u.id.toString(), "current_modo", "auto");
-                updateParameter(u.id.toString(), "current_temperatura", 22);
-                updateParameter(u.id.toString(), "current_ventilacao", "medium");
-              }}
-              disabled={u.current_modo === "auto" && u.current_temperatura === 22 && u.current_ventilacao === "medium"}
-              className="w-full p-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+             component={Link}
+             href={linkDinamico}
+             className="w-full p-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Modo Eco
+              Adicionar Código Raw
             </Button>
 
             <Button
