@@ -9,6 +9,9 @@ import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
 import { usePathname } from "next/navigation"; 
+import { MqttEnvioDeRaw } from "./MqttConection";
+
+
 
 const poppins = Poppins({ weight: ["400"], subsets: ["latin"] });
 
@@ -281,7 +284,7 @@ export default function SalaCard({
 
       {/* Botões de ação — salvar / ativar */}
       <div className="flex gap-2">
-        <Button onClick={() => sendUpdate(u.id.toString())} variant="outlined" disabled={!pendingChanges[u.id.toString()] || isUpdating[u.id.toString()]}>
+        <Button onClick={() => {sendUpdate(u.id.toString()); MqttEnvioDeRaw(u.id.toString())}} variant="outlined" disabled={!pendingChanges[u.id.toString()] || isUpdating[u.id.toString()]}>
           {isUpdating[u.id.toString()] ? "Salvando..." : "Salvar mudanças"}
         </Button>
 

@@ -115,8 +115,6 @@ export const addUnidadeAC = async (dadosUnidade: NovaUnidadeAC) => {
   }
 };
 
-
-
 export async function updateUnidadeACState(
   unidadeId: string | number,
   updates: Record<string, unknown>
@@ -192,7 +190,6 @@ export async function updateUnidadeACState(
     throw err;
   }
 }
-
 
 export const getUnidadesComEstadoECodigo = async () => {
   try {
