@@ -56,11 +56,12 @@ export async function MqttEnvioDeRaw(id: number | string) {
       client.publish("teste_mqtt/"+String(nome), String(raw), () => {
         console.log(`Publicado no tópico teste_mqtt/${nome}: ${raw}`);
       });
-      
-      client.publish("teste_mqtt/"+String(nome), "=$o$u$t$=", () => {
+      setTimeout(() => {
+        client.publish("teste_mqtt/"+String(nome), "=$o$u$t$=", () => {
         console.log(`Publicado no tópico teste_mqtt/${nome}: =$o$u$t$=`);
         client.end();
       });
+      }, 500);
     });
 
     client.on('error', (err) => {
