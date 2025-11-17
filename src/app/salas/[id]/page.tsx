@@ -2,9 +2,11 @@ import { updateEstadoAction } from "@/app/actions";
 import SalaCards from "@/app/components/SalaCards";
 import { getUnidadesAC, UnidadeAC } from "@/lib/data";
 
-async function getUnidade(params: { id: string }): Promise<UnidadeAC> {
+async function getUnidade(id: string): Promise<UnidadeAC> {
     const unidades = await getUnidadesAC();
-    return unidades.find(u => u.id === parseInt(params.id))!;
+    const unidade = unidades.find(u => u?.id === parseInt(id));
+    if (!unidade) throw new Error(`Unidade with id ${id} not found`);
+    return unidade;
 }
 interface SalaProps {
     params: {
@@ -12,8 +14,8 @@ interface SalaProps {
     };
 }
 
-export default async function Sala(u: SalaProps) {
-    const unidades = await getUnidade(u.params);
+export default async function Sala({params}: SalaProps) {
+    const unidades = await getUnidade(params.id);
 
     // The component now receives the correctly typed action.
     return (

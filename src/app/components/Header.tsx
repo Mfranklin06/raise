@@ -27,7 +27,7 @@ export default function Header() {
             <Link href="/#features" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Recursos</Link>
             <Link href="/#about" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Sobre</Link>
             <Link href="/salas" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Salas</Link>
-            <Link href="/relatorios" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Relatórios</Link>
+            <Link href="/portas" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Portas</Link>
             <ThemeToggle />
           </nav>
 
@@ -60,7 +60,7 @@ export default function Header() {
             <Link href="/#features" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Recursos</Link>
             <Link href="/#about" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Sobre</Link>
             <Link href="/salas" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Salas</Link>
-            <Link href="/relatorios" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Relatórios</Link>
+            <Link href="/portas" onClick={() => setOpen(false)} className="py-2 text-lg text-foreground">Portas</Link>
           </div>
         </div>
       </div>
