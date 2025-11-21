@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button, Card, CardContent, CardHeader } from '@mui/material';
 import { InteractiveParameterControl } from './InteractiveParameters';
 import type { UnidadeAC } from '@/lib/data';
-import { MqttEnvioDeRaw } from './MqttConection';
+import { MqttEnvioDeJson } from './MqttConection';
 
 const poppins = Poppins({ weight: ['400'], subsets: ['latin'] });
 
@@ -165,7 +165,7 @@ export default function SalasCards({
                       fullWidth
                       variant='outlined'
                       disabled={!pendingChanges[u.id] || !!isUpdating[u.id]}
-                      onClick={() => {sendUpdate(u.id.toString()); MqttEnvioDeRaw(u.id.toString())}}
+                      onClick={() => { sendUpdate(u.id.toString()); MqttEnvioDeJson(u.id.toString()) }}
                       sx={{
                         borderColor: "var(--primary)", color: "var(--primary)",
                         "&:hover": {
@@ -179,7 +179,7 @@ export default function SalasCards({
                   )}
 
                   <Button fullWidth className='w-full mt-4 bg-transparent' variant='outlined'
-                    
+
                     sx={{
                       borderColor: "var(--border)",
                       "&:hover": {
