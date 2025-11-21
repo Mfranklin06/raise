@@ -1,5 +1,4 @@
 'use client'
-import { Box, Button } from "@mui/material";
 import React, { useState } from "react";
 import connectToMqttBroker from "../components/MqttConectionPorta";
 
@@ -9,23 +8,23 @@ export default function Portas() {
         setIsOpen(!isOpen);
     }
     return (
-        <>
-            <div>
-                <h1 className="justify-center">Bem-Vindo a sala de portas</h1>
+
+        <main className="flex flex-col justify-center py-4 min-h-screen bg-background text-foreground">
+            <div className="flex justify-center mt-20" id="inicial">
+                <h1>Bem-Vindo a sala de portas</h1>
             </div>
-            <main>
 
-                <Box component={"section"} className="flex flex-col justify-center text-center text-4xl space-y-6 py-6 bg-background min-h-screen text-foreground">
+            <section className="bg-card rounded-2xl shadow-lg p-6 sm:p-10 mt-10 mx-auto">
 
 
-                    <div className="space-y-6">
-                        <h1 className="justify-center">abra ou feche sua porta</h1>
+                <div className="flex flex-col sm:items-center sm:justify-between items-center gap-8">
+                    <h1 className="justify-center">abra ou feche sua porta</h1>
 
-                        <Button className="w-64" variant="outlined" onClick={() => { toggleDoor(); connectToMqttBroker(isOpen ? 'fechada' : 'aberta') }}>{isOpen ? 'fechar' : 'abrir'}</Button>
-                    </div>
-                </Box>
-            </main>
-        </>
+                    <button className="w-64" onClick={() => { toggleDoor(); connectToMqttBroker(isOpen ? 'fechada' : 'aberta') }}>{isOpen ? 'fechar' : 'abrir'}</button>
+                </div>
+            </section>
+        </main>
+
     );
 }
 

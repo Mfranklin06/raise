@@ -27,7 +27,7 @@ export default function Header() {
             <Link href="/#features" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Recursos</Link>
             <Link href="/#about" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Sobre</Link>
             <Link href="/salas" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Salas</Link>
-            <Link href="/portas" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Portas</Link>
+            <Link href="/portas/#inicial" className="text-sm text-foreground hover:opacity-90 hover:text-primary">Portas</Link>
             <ThemeToggle />
           </nav>
 

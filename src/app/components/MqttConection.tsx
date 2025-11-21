@@ -3,23 +3,26 @@ import mqtt from 'mqtt';
 
 const url = 'wss://broker.emqx.io:8084/mqtt';
 
+// Atualizei a tipagem baseada nas colunas do seu Banco de Dados
 type Unidade = {
   id: number | string;
   name?: string;
   nome?: string;
-  current_raw_code?: string;
-  raw_code?: string;
-  raw?: string;
+  // Campos vindos do seu DB (conforme seu print anterior)
+  config_temperatura?: number;
+  config_modo?: string;
+  config_ventilacao?: string; 
 };
 
-export async function MqttEnvioDeRaw(id: number | string) {
+export async function MqttEnvioDeJson(id: number | string) {
   try {
     const numericId = Number(id);
     if (Number.isNaN(numericId)) {
-      console.warn('MqttEnvioDeRaw: id inválido:', id);
+      console.warn('MqttEnvioDeJson: id inválido:', id);
       return;
     }
 
+    // 1. Busca os dados atualizados da sala (que você acabou de salvar no DB)
     const res = await fetch('/api/salas/');
     if (!res.ok) {
       console.error('Falha ao buscar /api/salas:', res.status);
@@ -27,10 +30,7 @@ export async function MqttEnvioDeRaw(id: number | string) {
     }
 
     const data = await res.json();
-    // normaliza caso a API retorne { salas: [...] } ou um array direto
     const list: Unidade[] = Array.isArray(data) ? data : Array.isArray(data?.salas) ? data.salas : [];
-
-    console.log('dados recebidos:', data);
 
     const unidade = list.find(u => Number(u.id) === numericId);
 
@@ -39,29 +39,35 @@ export async function MqttEnvioDeRaw(id: number | string) {
       return;
     }
 
-    const nome = unidade.name ?? unidade.nome;
-    const raw = unidade.current_raw_code ?? unidade.raw_code ?? unidade.raw;
-
-    if (!nome || !raw) {
-      console.warn('Campos faltando na unidade:', unidade);
-      return;
+    // 2. Monta o Payload Limpo (Tradução DB -> JSON padrão da IA)
+    // O DB usa "config_temperatura", mas a IA espera "temp"
+    
+    let estadoAtual = "ON";
+    // Se o modo no banco for "desligado", avisamos a IA que é para desligar
+    if (unidade.config_modo === 'desligado' || unidade.config_modo === 'OFF') {
+        estadoAtual = "OFF";
     }
 
+    const payload = {
+        unidade_id: numericId,
+        temp: unidade.config_temperatura || 23, // Fallback para 23 se vier nulo
+        mode: unidade.config_modo || 'cool',
+        fan: unidade.config_ventilacao || 'high',
+        estado: estadoAtual
+    };
+
+    console.log('Enviando Payload JSON:', payload);
+
+    // 3. Conecta e Envia
     const client = mqtt.connect(url);
+    const topicoDestino = "teste_mqtt/Ar_pesquisa"; // O tópico que o Python escuta
 
     client.on('connect', () => {
-      client.subscribe(String(nome), (err) => {
-        if (err) console.error('Erro subscribe:', err);
+      // Publica o JSON transformado em String
+      client.publish(topicoDestino, JSON.stringify(payload), () => {
+        console.log(`Sucesso! JSON enviado para ${topicoDestino}`);
+        client.end(); // Fecha conexão logo após enviar
       });
-      client.publish("teste_mqtt/"+String(nome), String(raw), () => {
-        console.log(`Publicado no tópico teste_mqtt/${nome}: ${raw}`);
-      });
-      setTimeout(() => {
-        client.publish("teste_mqtt/"+String(nome), "=$o$u$t$=", () => {
-        console.log(`Publicado no tópico teste_mqtt/${nome}: =$o$u$t$=`);
-        client.end();
-      });
-      }, 500);
     });
 
     client.on('error', (err) => {
@@ -70,6 +76,6 @@ export async function MqttEnvioDeRaw(id: number | string) {
     });
 
   } catch (err) {
-    console.error('MqttEnvioDeRaw erro:', err);
+    console.error('MqttEnvioDeJson erro:', err);
   }
 }
