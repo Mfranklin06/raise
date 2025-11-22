@@ -9,9 +9,9 @@ type Unidade = {
   name?: string;
   nome?: string;
   // Campos vindos do seu DB (conforme seu print anterior)
-  config_temperatura?: number;
-  config_modo?: string;
-  config_ventilacao?: string;
+  current_temperatura?: number;
+  current_modo?: string;
+  current_ventilacao?: string;
 };
 
 export async function MqttEnvioDeJson(id: number | string) {
@@ -40,19 +40,19 @@ export async function MqttEnvioDeJson(id: number | string) {
     }
 
     // 2. Monta o Payload Limpo (Tradução DB -> JSON padrão da IA)
-    // O DB usa "config_temperatura", mas a IA espera "temp"
+    // O DB usa "current_temperatura", mas a IA espera "temp"
 
     let estadoAtual = "ON";
     // Se o modo no banco for "desligado", avisamos a IA que é para desligar
-    if (unidade.config_modo === 'desligado' || unidade.config_modo === 'OFF') {
+    if (unidade.current_modo === 'desligado' || unidade.current_modo === 'OFF') {
       estadoAtual = "OFF";
     }
 
     const payload = {
       unidade_id: numericId,
-      temp: unidade.config_temperatura || 23, // Fallback para 23 se vier nulo
-      mode: unidade.config_modo || 'cool',
-      fan: unidade.config_ventilacao || 'high',
+      temp: unidade.current_temperatura || 23, // Fallback para 23 se vier nulo
+      mode: unidade.current_modo || 'cool',
+      fan: unidade.current_ventilacao || 'high',
       estado: estadoAtual
     };
 

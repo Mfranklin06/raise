@@ -165,7 +165,7 @@ export default function SalasCards({
                       fullWidth
                       variant='outlined'
                       disabled={!pendingChanges[u.id] || !!isUpdating[u.id]}
-                      onClick={() => { sendUpdate(u.id.toString()); MqttEnvioDeJson(u.id.toString()) }}
+                      onClick={async () => { await sendUpdate(u.id.toString()); await MqttEnvioDeJson(u.id.toString()); }}
                       sx={{
                         borderColor: "var(--primary)", color: "var(--primary)",
                         "&:hover": {
