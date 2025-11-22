@@ -11,7 +11,7 @@ type Unidade = {
   // Campos vindos do seu DB (conforme seu print anterior)
   config_temperatura?: number;
   config_modo?: string;
-  config_ventilacao?: string; 
+  config_ventilacao?: string;
 };
 
 export async function MqttEnvioDeJson(id: number | string) {
@@ -41,26 +41,26 @@ export async function MqttEnvioDeJson(id: number | string) {
 
     // 2. Monta o Payload Limpo (Tradução DB -> JSON padrão da IA)
     // O DB usa "config_temperatura", mas a IA espera "temp"
-    
+
     let estadoAtual = "ON";
     // Se o modo no banco for "desligado", avisamos a IA que é para desligar
     if (unidade.config_modo === 'desligado' || unidade.config_modo === 'OFF') {
-        estadoAtual = "OFF";
+      estadoAtual = "OFF";
     }
 
     const payload = {
-        unidade_id: numericId,
-        temp: unidade.config_temperatura || 23, // Fallback para 23 se vier nulo
-        mode: unidade.config_modo || 'cool',
-        fan: unidade.config_ventilacao || 'high',
-        estado: estadoAtual
+      unidade_id: numericId,
+      temp: unidade.config_temperatura || 23, // Fallback para 23 se vier nulo
+      mode: unidade.config_modo || 'cool',
+      fan: unidade.config_ventilacao || 'high',
+      estado: estadoAtual
     };
 
     console.log('Enviando Payload JSON:', payload);
 
     // 3. Conecta e Envia
     const client = mqtt.connect(url);
-    const topicoDestino = "teste_mqtt/Ar_pesquisa"; // O tópico que o Python escuta
+    const topicoDestino = "test_mqtt/Ar_pesquisa"; // O tópico que o Python escuta
 
     client.on('connect', () => {
       // Publica o JSON transformado em String
