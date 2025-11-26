@@ -24,7 +24,7 @@ export default function HeroSection() {
   return (
     <section
       id="home"
-      className="relative min-h-[90vh] flex items-center bg-background overflow-hidden border-b border-border"
+      className="relative min-h-[90vh] flex items-center bg-background overflow-hidden"
       aria-label="Hero - RAISE"
     >
       {/* --- BACKGROUND TECH --- */}
@@ -79,7 +79,7 @@ export default function HeroSection() {
               {/* Botão Primário Customizado (Substituindo MUI) */}
               <Link
                 href="/salas"
-                className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-primary-foreground bg-primary-strong rounded-lg overflow-hidden transition-all hover:bg-primary hover:scale-[1.02] focus:ring-2 focus:ring-ring focus:outline-none shadow-lg shadow-primary/20"
+                className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-base bg-primary-strong rounded-lg overflow-hidden transition-all hover:bg-primary hover:text-primary-foreground hover:scale-[1.02] focus:ring-2 focus:ring-ring focus:outline-none shadow-lg shadow-primary/20"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Acessar Salas <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -97,7 +97,7 @@ export default function HeroSection() {
             </motion.div>
 
             {/* Stats Row */}
-            <motion.div variants={fadeUp} className="mt-12 pt-8 border-t border-border/50 flex gap-8 sm:gap-12">
+            <motion.div variants={fadeUp} className="mt-12 pt-8 flex gap-8 sm:gap-12">
               <div>
                 <div className="flex items-center gap-2 text-primary-strong mb-1">
                   <Activity className="w-4 h-4" />

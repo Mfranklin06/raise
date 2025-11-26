@@ -8,7 +8,7 @@ import * as THREE from "three";
 // Função auxiliar para gerar pontos aleatórios em uma esfera (Substitui o maath)
 function generateSpherePositions(count: number, radius: number) {
   const positions = new Float32Array(count * 3); // x, y, z para cada ponto
-  
+
   for (let i = 0; i < count; i++) {
     // Algoritmo para distribuição uniforme dentro da esfera
     const r = radius * Math.cbrt(Math.random());
@@ -23,12 +23,13 @@ function generateSpherePositions(count: number, radius: number) {
     positions[i * 3 + 1] = y;
     positions[i * 3 + 2] = z;
   }
-  
+
   return positions;
 }
+
 function Particles(props: object) {
   const ref = useRef<THREE.Points>(null);
-  
+
   // useMemo garante que o cálculo só rode uma vez e não trave a renderização
   const sphere = useMemo(() => generateSpherePositions(3000, 1.3), []);
 
@@ -56,10 +57,14 @@ function Particles(props: object) {
   );
 }
 
-export default function HeroScene() {
+interface HeroSceneProps {
+  className?: string;
+}
+
+export default function HeroScene({ className }: HeroSceneProps) {
   return (
-    <div className="absolute inset-0 z-0 sm:relative sm:h-[500px] sm:w-full h-[300px]">
-      <Canvas camera={{ position: [0, 0, 2.5], fov: 50 }} dpr={[1, 2]}> 
+    <div className={`absolute inset-0 z-0 sm:relative sm:h-[500px] sm:w-full h-[300px] ${className || ""}`}>
+      <Canvas camera={{ position: [0, 0, 2.5], fov: 50 }} dpr={[1, 2]}>
         <ambientLight intensity={0.5} />
         <Particles />
       </Canvas>

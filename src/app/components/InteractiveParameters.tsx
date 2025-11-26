@@ -1,9 +1,7 @@
 "use client"
 
 import { UnidadeAC } from "@/lib/data"
-import { ChevronLeftIcon, ChevronRightIcon, MinusIcon } from "@heroicons/react/24/solid"
-import { PlusIcon } from "@heroicons/react/24/solid"
-import { Button, Slider } from "@mui/material"
+import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react"
 
 interface ParameterOption {
     value: string | null
@@ -32,87 +30,61 @@ export function InteractiveParameterControl({
     step = 1,
     options,
     onChangeAction,
+    disabled = false
 }: InteractiveParameterControlProps) {
 
+    // For numeric controls (like temperature)
     if (!options) {
         const numericValue = typeof value === "number" ? value : 22
 
         return (
-            <div className="space-y-3">
+            <div className={`space-y-3 ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
                 <label className="text-sm font-medium text-foreground">{label}</label>
-                <div className="interactive-control bg-card border border-border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <Button
-                            variant="outlined"
-                            size="small"
+                <div className="bg-card/50 border border-border rounded-xl p-4 backdrop-blur-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <button
                             onClick={() => onChangeAction(Math.max(min, numericValue - step))}
-                            disabled={numericValue == min}
-                            className="h-8 w-8 p-0"
-                            sx={{
-                                borderColor: "var(--card)",
-                                color: "var(--primary)",
-                                "&:hover": {
-                                    backgroundColor: "var(--primary)",
-                                    borderColor: "var(--primary)",
-                                    color: "var(--card)"
-                                }
-                            }}
+                            disabled={numericValue <= min || disabled}
+                            className="h-10 w-10 flex items-center justify-center rounded-lg border border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Diminuir"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" >
-                                <MinusIcon strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
-                            </svg>
-                        </Button>
+                            <Minus className="w-5 h-5" />
+                        </button>
 
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-foreground">
+                            <div className="text-3xl font-bold text-foreground tabular-nums">
                                 {numericValue}
-                                {unit}
+                                <span className="text-lg text-muted-foreground ml-1">{unit}</span>
                             </div>
                         </div>
 
-                        <Button
-                            variant="outlined"
-                            size="small"
+                        <button
                             onClick={() => onChangeAction(Math.min(max, numericValue + step))}
-                            disabled={numericValue == max}
-                            className="h-8 w-8 p-0"
-                            sx={{
-                                borderColor: "var(--card)",
-                                color: "var(--primary)",
-                                "&:hover": {
-                                    backgroundColor: "var(--primary)",
-                                    borderColor: "var(--primary)",
-                                    color: "var(--card)"
-                                }
-                            }}
+                            disabled={numericValue >= max || disabled}
+                            className="h-10 w-10 flex items-center justify-center rounded-lg border border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Aumentar"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" >
-                                <PlusIcon strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
-                            </svg>
-                        </Button>
+                            <Plus className="w-5 h-5" />
+                        </button>
                     </div>
 
-                    <Slider
-                        value={numericValue}
-                        onChange={(_, newValue) => onChangeAction(newValue as number)}
-                        aria-label={label}
-                        valueLabelDisplay="auto"
-                        step={step}
-                        marks
-                        min={min}
-                        max={max}
-                        className="parameter-slider"
-                        sx={{ color: "var(--primary)" }}
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                        <span>
-                            {min}
-                            {unit}
-                        </span>
-                        <span>
-                            {max}
-                            {unit}
-                        </span>
+                    {/* Custom Range Slider */}
+                    <div className="relative w-full h-6 flex items-center">
+                        <input
+                            type="range"
+                            min={min}
+                            max={max}
+                            step={step}
+                            value={numericValue}
+                            onChange={(e) => onChangeAction(Number(e.target.value))}
+                            disabled={disabled}
+                            className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                        />
+                    </div>
+
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <span>{min}{unit}</span>
+                        <span>{max}{unit}</span>
                     </div>
                 </div>
             </div>
@@ -122,88 +94,61 @@ export function InteractiveParameterControl({
     // For option-based controls (like mode selection)
     const currentIndex = options.findIndex((opt) => opt.value === value) !== -1
         ? options.findIndex((opt) => opt.value === value)
-        : 3;
+        : 0; // Default to first option if not found
 
-
-    // For option-based controls (like mode selection)
-    if (options) {
-
-        const handlePrevious = () => {
-            if (currentIndex > 0) {
-                onChangeAction(options[currentIndex - 1].value ?? "")
-            }
+    const handlePrevious = () => {
+        if (currentIndex > 0) {
+            onChangeAction(options[currentIndex - 1].value ?? "")
         }
-
-        const handleNext = () => {
-            if (currentIndex < options.length - 1) {
-                onChangeAction(options[currentIndex + 1].value ?? "")
-            }
-        }
-
-        return (
-            <div className="space-y-3">
-                <label className="text-sm font-medium text-foreground">{label}</label>
-                <div className="interactive-control bg-card border border-border rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={handlePrevious}
-                            disabled={currentIndex === 0}
-                            className="h-8 w-8 p-0 border"
-                            sx={{
-                                borderColor: "var(--card)",
-                                color: "var(--primary)",
-                                "&:hover": {
-                                    backgroundColor: "var(--primary)",
-                                    borderColor: "var(--primary)",
-                                    color: "var(--card)"
-                                }
-                            }}
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" >
-                                <ChevronLeftIcon strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
-                            </svg>
-                        </Button>
-
-                        <div className="text-center flex-1">
-                            <div className="text-lg font-semibold text-foreground">{options[currentIndex]?.label || "N/A"}</div>
-                            <div className="flex justify-center mt-2 space-x-1">
-                                {options.map((_, index) => (
-                                    <div
-                                        key={index}
-                                        className={`w-2 h-2 rounded-full transition-colors ${index === currentIndex ? "bg-primary" : "bg-muted border border-primary"
-                                            }`}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={handleNext}
-                            disabled={currentIndex === 3}
-                            className="h-8 w-8 p-0"
-                            sx={{
-                                borderColor: "var(--card)",
-                                color: "var(--primary)",
-                                "&:hover": {
-                                    backgroundColor: "var(--primary)",
-                                    borderColor: "var(--primary)",
-                                    color: "var(--card)"
-                                }
-                            }}
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" >
-                                <ChevronRightIcon strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
-                            </svg>
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        )
     }
 
-    // For numeric controls (like temperature, ventilation)
+    const handleNext = () => {
+        if (currentIndex < options.length - 1) {
+            onChangeAction(options[currentIndex + 1].value ?? "")
+        }
+    }
+
+    return (
+        <div className={`space-y-3 ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
+            <label className="text-sm font-medium text-foreground">{label}</label>
+            <div className="bg-card/50 border border-border rounded-xl p-4 backdrop-blur-sm">
+                <div className="flex items-center justify-between gap-4">
+                    <button
+                        onClick={handlePrevious}
+                        disabled={currentIndex === 0 || disabled}
+                        className="h-10 w-10 flex items-center justify-center rounded-lg border border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Anterior"
+                    >
+                        <ChevronLeft className="w-5 h-5" />
+                    </button>
+
+                    <div className="text-center flex-1 min-w-0">
+                        <div className="text-lg font-semibold text-foreground truncate px-2">
+                            {options[currentIndex]?.label || "Selecione"}
+                        </div>
+                        <div className="flex justify-center mt-2 space-x-1.5">
+                            {options.map((_, index) => (
+                                <div
+                                    key={index}
+                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex
+                                            ? "bg-primary w-4"
+                                            : "bg-muted-foreground/30"
+                                        }`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={handleNext}
+                        disabled={currentIndex === options.length - 1 || disabled}
+                        className="h-10 w-10 flex items-center justify-center rounded-lg border border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Próximo"
+                    >
+                        <ChevronRight className="w-5 h-5" />
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
 }

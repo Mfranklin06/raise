@@ -1,15 +1,12 @@
-// app/salas/components/SalasCards.tsx
 'use client';
 
 import React, { useState } from 'react';
-import { Poppins } from 'next/font/google';
 import Link from 'next/link';
-import { Button, Card, CardContent, CardHeader } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Thermometer, Wind, Zap, Power, ArrowRight, Activity } from 'lucide-react';
 import { InteractiveParameterControl } from './InteractiveParameters';
 import type { UnidadeAC } from '@/lib/data';
 import { MqttEnvioDeJson } from './MqttConection';
-
-const poppins = Poppins({ weight: ['400'], subsets: ['latin'] });
 
 type PendingChange = Record<string, string | number>;
 type PendingChangesMap = Record<string, PendingChange>;
@@ -17,7 +14,7 @@ type UpdatingMap = Record<string, boolean>;
 
 export default function SalasCards({
   unidades,
-  updateAction, // a Server Action passada como prop
+  updateAction,
 }: {
   unidades: UnidadeAC[];
   updateAction: (payload: { id: string; updates: Record<string, unknown> }) => Promise<UnidadeAC>;
@@ -26,6 +23,7 @@ export default function SalasCards({
   const [pendingChanges, setPendingChanges] = useState<PendingChangesMap>({});
   const [isUpdating, setIsUpdating] = useState<UpdatingMap>({});
   const [errorMap, setErrorMap] = useState<Record<string, string | null>>({});
+  const [searchTerm, setSearchTerm] = useState('');
 
   const updateParameter = (unidadeId: string, parameter: string, value: number | string) => {
     setUnidadeState((prev) =>
@@ -54,27 +52,19 @@ export default function SalasCards({
     }
   };
 
-  // --- NOVA FUNÇÃO ---
-  // Função dedicada para ativar uma unidade que está desligada (temp nula)
   const sendInitialActivation = async (unidadeId: string) => {
-    // Payload padrão: Temperatura 22°C (valor default do slider) e modo Refrigerar
     const initialPayload = {
       temperatura: 22,
-      modo: 'cool', // 'cool' corresponde a "Refrigerar"
-      ventilacao: 'auto', // Pode definir um valor padrão para ventilação também
+      modo: 'cool',
+      ventilacao: 'auto',
     };
 
     setIsUpdating((p) => ({ ...p, [unidadeId]: true }));
     setErrorMap((p) => ({ ...p, [unidadeId]: null }));
 
     try {
-      // Usa a mesma server action, que é flexível o suficiente para aceitar isso
       const updated = await updateAction({ id: unidadeId, updates: initialPayload });
-
-      // Atualiza a UI com os dados retornados pelo servidor
       setUnidadeState((prev) => prev.map((u) => (u.id.toString() === unidadeId ? { ...u, ...updated } : u)));
-
-      // Não há "pending changes" para limpar, pois não existiam
     } catch (err: unknown) {
       console.error('[Client] sendInitialActivation error', err);
       setErrorMap((p) => ({ ...p, [unidadeId]: err instanceof Error ? err.message : 'Erro desconhecido' }));
@@ -83,118 +73,181 @@ export default function SalasCards({
     }
   };
 
+  const filteredUnidades = unidadeState.filter(u =>
+    u.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <section className={`${poppins.className} w-full px-4 py-6 bg-background min-h-screen`}>
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        <div className="col-span-full">
-          <h1 className="text-foreground text-2xl font-bold">Controle de Salas</h1>
+    <section className="w-full py-8">
+      {/* Header & Search */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+            <Zap className="w-8 h-8 text-primary" />
+            Controle de Salas
+          </h1>
+          <p className="text-muted-foreground mt-1">Gerencie a climatização de todas as unidades</p>
         </div>
 
-        {unidadeState.map((u) => {
-          // Variável para identificar facilmente se a unidade está no estado inicial/desligado
-          const isUnitInactive = u.current_temperatura === null;
+        <div className="relative w-full md:w-96">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <input
+            type="text"
+            placeholder="Buscar sala..."
+            className="block w-full pl-10 pr-3 py-2.5 border border-border rounded-xl bg-card/50 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
 
-          return (
-            <Card key={u.id} className="hover:shadow-xl transition-all duration-300 border-border" sx={{ backgroundColor: 'var(--card)', color: 'var(--foreground)' }}>
-              <CardHeader title={u.name} subheader={`Última atualização: ${u.last_updated_at ?? 'N/A'}`} className='pb-4' />
-              <CardContent className='space-y-6'>
-                <InteractiveParameterControl
-                  label="Temperatura"
-                  value={u.current_temperatura}
-                  unit="°C"
-                  min={17}
-                  max={25}
-                  step={1}
-                  onChangeAction={(value) => updateParameter(u.id.toString(), 'current_temperatura', value)}
-                  // Desabilitar se a unidade não tiver sido ativada ainda
-                  disabled={isUnitInactive}
-                />
-                <InteractiveParameterControl
-                  label="Modo"
-                  value={u.current_modo ?? 'off'}
-                  options={[
-                    { value: 'auto', label: 'Automático' },
-                    { value: 'cool', label: 'Refrigerar' },
-                    { value: 'heat', label: 'Aquecer' },
-                    { value: 'off', label: 'Desligado' },
-                  ]}
-                  onChangeAction={(value) => updateParameter(u.id.toString(), 'current_modo', value)}
-                  // Desabilitar se a unidade não tiver sido ativada ainda
-                  disabled={isUnitInactive}
-                />
-                <InteractiveParameterControl
-                  label="Ventilação"
-                  value={u.current_ventilacao ?? 'auto'}
-                  options={[
-                    { value: 'low', label: 'Baixa' },
-                    { value: 'medium', label: 'Média' },
-                    { value: 'high', label: 'Alta' },
-                    { value: 'auto', label: 'Automática' },
-                  ]}
-                  onChangeAction={(value) => updateParameter(u.id.toString(), 'current_ventilacao', value)}
-                  // Desabilitar se a unidade não tiver sido ativada ainda
-                  disabled={isUnitInactive}
-                />
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <AnimatePresence mode="popLayout">
+          {filteredUnidades.map((u) => {
+            const isUnitInactive = u.current_temperatura === null;
+            const hasPendingChanges = !!pendingChanges[u.id];
+            const isUpdatingUnit = !!isUpdating[u.id];
 
-                {errorMap[u.id] && <div className="text-sm text-red-500">{errorMap[u.id]}</div>}
+            return (
+              <motion.div
+                key={u.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                className="bg-card/70 backdrop-blur-md border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group"
+              >
+                {/* Card Header */}
+                <div className="p-6 border-b border-border/50 bg-secondary/30">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-bold text-foreground">{u.name}</h3>
+                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${isUnitInactive
+                      ? 'bg-muted text-muted-foreground border-border'
+                      : 'bg-green-500/10 text-green-500 border-green-500/20'
+                      }`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${isUnitInactive ? 'bg-muted-foreground' : 'bg-green-500 animate-pulse'}`} />
+                      {isUnitInactive ? 'Inativo' : 'Ativo'}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Activity className="w-3 h-3" />
+                    <span>
+                      Atualizado: {u.last_updated_at
+                        ? new Date(u.last_updated_at).toLocaleString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })
+                        : 'N/A'}
+                    </span>
+                  </div>
+                </div>
 
-                <div className='flex gap-4 mt-4'>
-                  {/* --- LÓGICA DO BOTÃO MODIFICADA --- */}
-                  {isUnitInactive ? (
-                    <Button
-                      fullWidth
-                      variant='outlined' // Usei 'contained' para dar mais destaque à ação principal
-                      disabled={!!isUpdating[u.id]}
-                      onClick={() => sendInitialActivation(u.id.toString())}
-                      sx={{
-                        borderColor: "var(--primary)", color: "var(--primary)",
-                        "&:hover": {
-                          backgroundColor: "var(--primary)",
-                          color: "var(--card)"
-                        }, "&.Mui-disabled": {
-                          borderColor: "var(--muted-foreground)",
-                          color: "var(--muted-foreground)"
-                        }
-                      }}
-                    >
-                      {isUpdating[u.id] ? 'Ativando...' : 'Ativar e Refrigerar'}
-                    </Button>
-                  ) : (
-                    <Button
-                      fullWidth
-                      variant='outlined'
-                      disabled={!pendingChanges[u.id] || !!isUpdating[u.id]}
-                      onClick={async () => { await sendUpdate(u.id.toString()); await MqttEnvioDeJson(u.id.toString()); }}
-                      sx={{
-                        borderColor: "var(--primary)", color: "var(--primary)",
-                        "&:hover": {
-                          backgroundColor: "var(--primary)",
-                          color: "var(--card)"
-                        }
-                      }}
-                    >
-                      {isUpdating[u.id] ? 'Atualizando...' : (pendingChanges[u.id] ? 'Atualizar Parâmetros' : 'Parâmetros Atualizados')}
-                    </Button>
+                {/* Card Content */}
+                <div className="p-6 space-y-6">
+                  <InteractiveParameterControl
+                    label="Temperatura"
+                    value={u.current_temperatura}
+                    unit="°C"
+                    min={17}
+                    max={25}
+                    step={1}
+                    onChangeAction={(value) => updateParameter(u.id.toString(), 'current_temperatura', value)}
+                    disabled={isUnitInactive}
+                  />
+
+                  <InteractiveParameterControl
+                    label="Modo"
+                    value={u.current_modo ?? 'desligado'}
+                    options={[
+                      { value: 'auto', label: 'Automático' },
+                      { value: 'cool', label: 'Refrigerar' },
+                      { value: 'heat', label: 'Aquecer' },
+                      { value: 'desligado', label: 'Desligado' },
+                    ]}
+                    onChangeAction={(value) => updateParameter(u.id.toString(), 'current_modo', value)}
+                    disabled={isUnitInactive}
+                  />
+
+                  <InteractiveParameterControl
+                    label="Ventilação"
+                    value={u.current_ventilacao ?? 'auto'}
+                    options={[
+                      { value: 'low', label: 'Baixa' },
+                      { value: 'medium', label: 'Média' },
+                      { value: 'high', label: 'Alta' },
+                      { value: 'auto', label: 'Automática' },
+                    ]}
+                    onChangeAction={(value) => updateParameter(u.id.toString(), 'current_ventilacao', value)}
+                    disabled={isUnitInactive}
+                  />
+
+                  {errorMap[u.id] && (
+                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+                      {errorMap[u.id]}
+                    </div>
                   )}
 
-                  <Button fullWidth className='w-full mt-4 bg-transparent' variant='outlined'
+                  <div className="pt-2 space-y-3">
+                    {isUnitInactive ? (
+                      <button
+                        onClick={() => sendInitialActivation(u.id.toString())}
+                        disabled={isUpdatingUnit}
+                        className="w-full py-3 px-4 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                      >
+                        {isUpdatingUnit ? (
+                          <span className="animate-spin w-5 h-5 border-2 border-current border-t-transparent rounded-full" />
+                        ) : (
+                          <Power className="w-5 h-5" />
+                        )}
+                        {isUpdatingUnit ? 'Ativando...' : 'Ativar Sistema'}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={async () => { await sendUpdate(u.id.toString()); await MqttEnvioDeJson(u.id.toString()); }}
+                        disabled={!hasPendingChanges || isUpdatingUnit}
+                        className={`w-full py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${hasPendingChanges
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20'
+                          : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {isUpdatingUnit ? (
+                          <span className="animate-spin w-5 h-5 border-2 border-current border-t-transparent rounded-full" />
+                        ) : hasPendingChanges ? (
+                          <Zap className="w-5 h-5" />
+                        ) : (
+                          <Activity className="w-5 h-5" />
+                        )}
+                        {isUpdatingUnit ? 'Atualizando...' : (hasPendingChanges ? 'Aplicar Mudanças' : 'Sincronizado')}
+                      </button>
+                    )}
 
-                    sx={{
-                      borderColor: "var(--border)",
-                      "&:hover": {
-                        backgroundColor: "var(--primary)",
-                        color: "var(--muted)"
-                      }, color: "var(--primary-strong)",
-                    }}
-                  >
-                    <Link href={`/salas/${u.id}/`}>Ampliar Informações</Link>
-                  </Button>
+                    <Link
+                      href={`/salas/${u.id}/`}
+                      className="block w-full"
+                    >
+                      <button className="w-full py-2.5 px-4 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-sm font-medium group-hover:border-primary/30">
+                        Ver Detalhes
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </Link>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
+        {filteredUnidades.length === 0 && (
+          <div className="col-span-full py-12 text-center text-muted-foreground">
+            <p className="text-lg">Nenhuma sala encontrada com "{searchTerm}"</p>
+          </div>
+        )}
       </div>
     </section>
   );
