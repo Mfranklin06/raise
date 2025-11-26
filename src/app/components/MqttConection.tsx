@@ -1,7 +1,10 @@
 'use client'
 import mqtt from 'mqtt';
 
-const url = 'wss://broker.emqx.io:8084/mqtt';
+const url = process.env.NEXT_PUBLIC_MQTT_BROKER_URL || '';
+if (!url) {
+  console.error("ERRO: A variável de ambiente NEXT_PUBLIC_MQTT_BROKER_URL não está definida.");
+}
 
 // Atualizei a tipagem baseada nas colunas do seu Banco de Dados
 type Unidade = {
