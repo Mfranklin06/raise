@@ -58,7 +58,7 @@ function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: strin
 
 // Feature Card Component
 interface FeatureCardProps {
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   delay: number;

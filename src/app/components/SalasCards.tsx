@@ -248,7 +248,7 @@ export default function SalasCards({
 
         {filteredUnidades.length === 0 && (
           <div className="col-span-full py-12 text-center text-muted-foreground">
-            <p className="text-lg">Nenhuma sala encontrada com "{searchTerm}"</p>
+            <p className="text-lg">Nenhuma sala encontrada com &quot;{searchTerm}&quot;</p>
           </div>
         )}
       </div>
