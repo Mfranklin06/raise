@@ -1,6 +1,8 @@
 "use client"
 
-import { UnidadeAC } from "@/lib/data"
+import React from "react"
+
+
 import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react"
 
 interface ParameterOption {
@@ -18,7 +20,7 @@ interface InteractiveParameterControlProps {
     options?: ParameterOption[]
     onChangeAction: (value: number | string) => void
     disabled?: boolean
-    unidades?: UnidadeAC[]
+    icon?: React.ElementType<{ className?: string }>
 }
 
 export function InteractiveParameterControl({
@@ -30,7 +32,8 @@ export function InteractiveParameterControl({
     step = 1,
     options,
     onChangeAction,
-    disabled = false
+    disabled = false,
+    icon: Icon
 }: InteractiveParameterControlProps) {
 
     // For numeric controls (like temperature)
@@ -39,7 +42,10 @@ export function InteractiveParameterControl({
 
         return (
             <div className={`space-y-3 ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
-                <label className="text-sm font-medium text-foreground">{label}</label>
+                <div className="flex items-center gap-2">
+                    {Icon && <Icon className="w-4 h-4 text-muted-foreground" />}
+                    <label className="text-sm font-medium text-foreground">{label}</label>
+                </div>
                 <div className="bg-card/50 border border-border rounded-xl p-4 backdrop-blur-sm">
                     <div className="flex items-center justify-between mb-4">
                         <button
@@ -131,8 +137,8 @@ export function InteractiveParameterControl({
                                 <div
                                     key={index}
                                     className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex
-                                            ? "bg-primary w-4"
-                                            : "bg-muted-foreground/30"
+                                        ? "bg-primary w-4"
+                                        : "bg-muted-foreground/30"
                                         }`}
                                 />
                             ))}
