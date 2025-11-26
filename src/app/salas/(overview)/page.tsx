@@ -9,17 +9,11 @@ async function getUnidades(): Promise<UnidadeAC[]> {
     return unidades;
 }
 
-
 export default async function Salas() {
     const unidades = await getUnidades();
     return (
-        <main className="min-h-screen bg-background">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-[5rem]">
-                <Suspense fallback={<LoadingRooms />}>
-                    <SalasCards unidades={unidades} updateAction={updateEstadoAction} />
-                </Suspense>
-
-            </div>
-        </main>
+        <Suspense fallback={<LoadingRooms />}>
+            <SalasCards unidades={unidades} updateAction={updateEstadoAction} />
+        </Suspense>
     );
 }
