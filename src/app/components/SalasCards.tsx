@@ -159,6 +159,7 @@ export default function SalasCards({
                     step={1}
                     onChangeAction={(value) => updateParameter(u.id.toString(), 'current_temperatura', value)}
                     disabled={isUnitInactive}
+                    icon={Thermometer}
                   />
 
                   <InteractiveParameterControl
@@ -172,6 +173,7 @@ export default function SalasCards({
                     ]}
                     onChangeAction={(value) => updateParameter(u.id.toString(), 'current_modo', value)}
                     disabled={isUnitInactive}
+                    icon={Zap}
                   />
 
                   <InteractiveParameterControl
@@ -185,6 +187,7 @@ export default function SalasCards({
                     ]}
                     onChangeAction={(value) => updateParameter(u.id.toString(), 'current_ventilacao', value)}
                     disabled={isUnitInactive}
+                    icon={Wind}
                   />
 
                   {errorMap[u.id] && (
