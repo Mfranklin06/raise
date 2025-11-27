@@ -63,7 +63,7 @@ export async function MqttEnvioDeJson(id: number | string) {
 
     // 3. Conecta e Envia
     const client = mqtt.connect(url);
-    const topicoDestino = "test_mqtt/Ar_pesquisa"; // O tópico que o Python escuta
+    const topicoDestino = "teste_mqtt/Ar_pesquisa"; // O tópico que o Python escuta
 
     client.on('connect', () => {
       // Publica o JSON transformado em String
