@@ -56,7 +56,7 @@ export default function SalasCards({
     const initialPayload = {
       temperatura: 22,
       modo: 'cool',
-      ventilacao: 'auto',
+      ventilacao: 'high',
     };
 
     setIsUpdating((p) => ({ ...p, [unidadeId]: true }));
