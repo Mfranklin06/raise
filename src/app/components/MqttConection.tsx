@@ -1,32 +1,25 @@
 'use client'
 import mqtt from 'mqtt';
 
-const url = "wss://broker.emqx.io:8084/mqtt";
+const url = 'wss://broker.emqx.io:8084/mqtt';
 
-if (!url) {
-  console.error("ERRO: A variável de ambiente NEXT_PUBLIC_MQTT_BROKER_URL não está definida.");
-}
-
-// Atualizei a tipagem baseada nas colunas do seu Banco de Dados
 type Unidade = {
   id: number | string;
   name?: string;
   nome?: string;
-  // Campos vindos do seu DB (conforme seu print anterior)
-  current_temperatura?: number;
-  current_modo?: string;
-  current_ventilacao?: string;
+  current_raw_code?: string;
+  raw_code?: string;
+  raw?: string;
 };
 
-export async function MqttEnvioDeJson(id: number | string) {
+export async function MqttEnvioDeRaw(id: number | string) {
   try {
     const numericId = Number(id);
     if (Number.isNaN(numericId)) {
-      console.warn('MqttEnvioDeJson: id inválido:', id);
+      console.warn('MqttEnvioDeRaw: id inválido:', id);
       return;
     }
 
-    // 1. Busca os dados atualizados da sala (que você acabou de salvar no DB)
     const res = await fetch('/api/salas/');
     if (!res.ok) {
       console.error('Falha ao buscar /api/salas:', res.status);
@@ -34,7 +27,10 @@ export async function MqttEnvioDeJson(id: number | string) {
     }
 
     const data = await res.json();
+    // normaliza caso a API retorne { salas: [...] } ou um array direto
     const list: Unidade[] = Array.isArray(data) ? data : Array.isArray(data?.salas) ? data.salas : [];
+
+    console.log('dados recebidos:', data);
 
     const unidade = list.find(u => Number(u.id) === numericId);
 
@@ -43,35 +39,29 @@ export async function MqttEnvioDeJson(id: number | string) {
       return;
     }
 
-    // 2. Monta o Payload Limpo (Tradução DB -> JSON padrão da IA)
-    // O DB usa "current_temperatura", mas a IA espera "temp"
+    const nome = unidade.name ?? unidade.nome;
+    const raw = unidade.current_raw_code ?? unidade.raw_code ?? unidade.raw;
 
-    let estadoAtual = "ON";
-    // Se o modo no banco for "desligado", avisamos a IA que é para desligar
-    if (unidade.current_modo === 'desligado' || unidade.current_modo === 'OFF') {
-      estadoAtual = "OFF";
+    if (!nome || !raw) {
+      console.warn('Campos faltando na unidade:', unidade);
+      return;
     }
 
-    const payload = {
-      unidade_id: numericId,
-      temp: unidade.current_temperatura || 23, // Fallback para 23 se vier nulo
-      mode: unidade.current_modo || 'cool',
-      fan: unidade.current_ventilacao || 'high',
-      estado: estadoAtual
-    };
-
-    console.log('Enviando Payload JSON:', payload);
-
-    // 3. Conecta e Envia
     const client = mqtt.connect(url);
-    const topicoDestino = "teste_mqtt/Ar_Pesquisa";
 
     client.on('connect', () => {
-      // Publica o JSON transformado em String
-      client.publish(topicoDestino, JSON.stringify(payload), () => {
-        console.log(`Sucesso! JSON enviado para ${topicoDestino}`);
-        client.end(); // Fecha conexão logo após enviar
+      client.subscribe(String(nome), (err) => {
+        if (err) console.error('Erro subscribe:', err);
       });
+      client.publish("teste_mqtt/" + String(nome), String(raw), () => {
+        console.log(`Publicado no tópico teste_mqtt/${nome}: ${raw}`);
+      });
+      setTimeout(() => {
+        client.publish("teste_mqtt/" + String(nome), "=$o$u$t$=", () => {
+          console.log(`Publicado no tópico teste_mqtt/${nome}: =$o$u$t$=`);
+          client.end();
+        });
+      }, 500);
     });
 
     client.on('error', (err) => {
@@ -80,6 +70,6 @@ export async function MqttEnvioDeJson(id: number | string) {
     });
 
   } catch (err) {
-    console.error('MqttEnvioDeJson erro:', err);
+    console.error('MqttEnvioDeRaw erro:', err);
   }
 }

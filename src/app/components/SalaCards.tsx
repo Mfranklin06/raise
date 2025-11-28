@@ -6,7 +6,7 @@ import { UnidadeAC } from "@/lib/data";
 import { Thermometer, Wind, Zap, Power, Settings, Activity, ArrowLeft, Droplets, Gauge } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MqttEnvioDeJson } from "./MqttConection";
+import { MqttEnvioDeRaw } from "./MqttConection";
 import { motion } from "framer-motion";
 
 type PendingChange = Record<string, string | number>;
@@ -108,8 +108,8 @@ export default function SalaCard({
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
             {u.name}
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${isUnitInactive
-                ? 'bg-muted text-muted-foreground border-border'
-                : 'bg-green-500/10 text-green-500 border-green-500/20'
+              ? 'bg-muted text-muted-foreground border-border'
+              : 'bg-green-500/10 text-green-500 border-green-500/20'
               }`}>
               <div className={`w-1.5 h-1.5 rounded-full ${isUnitInactive ? 'bg-muted-foreground' : 'bg-green-500 animate-pulse'}`} />
               {isUnitInactive ? 'Inativo' : 'Ativo'}
@@ -134,11 +134,11 @@ export default function SalaCard({
             </button>
           ) : (
             <button
-              onClick={async () => { await sendUpdate(u.id.toString()); await MqttEnvioDeJson(u.id.toString()); }}
+              onClick={async () => { await sendUpdate(u.id.toString()); await MqttEnvioDeRaw(u.id.toString()); }}
               disabled={!hasPendingChanges || isUpdatingUnit}
               className={`flex-1 md:flex-none py-2.5 px-6 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${hasPendingChanges
-                  ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20'
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border'
+                ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20'
+                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {isUpdatingUnit ? (
