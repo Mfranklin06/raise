@@ -3,8 +3,8 @@ import { getUnidadeComCodigos } from "@/lib/data";
 import { addCodigoRawAction } from "../../../actions"; // Criaremos esta Action a seguir
 
 // A página recebe 'params' que contém o 'id' da URL
-export default async function AdicionarCodigoPage({ params }: { params: { id: string } }) {
-  const unidadeId = parseInt(params.id, 10);
+export default async function AdicionarCodigoPage({ params }: { params: { id: number } }) {
+  const unidadeId = params.id;
   const data = await getUnidadeComCodigos(unidadeId);
 
   if (!data) {
@@ -24,16 +24,16 @@ export default async function AdicionarCodigoPage({ params }: { params: { id: st
 
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-muted-foreground">Descrição</label>
-            <input 
-              type="text" id="description" name="description" required 
+            <input
+              type="text" id="description" name="description" required
               placeholder="Ex: Ligar 22°C - Frio - Vent. Auto"
-              className="mt-1 block w-full border border-boder rounded-md shadow-sm p-2" 
+              className="mt-1 block w-full border border-boder rounded-md shadow-sm p-2"
             />
           </div>
 
           <div>
             <label htmlFor="raw_code" className="block text-sm font-medium text-muted-foreground">Código RAW</label>
-            <textarea 
+            <textarea
               id="raw_code" name="raw_code" required rows={3}
               placeholder="Cole o código infravermelho aqui..."
               className="bg-card text-card-foreground mt-1 block w-full border border-border rounded-lg shadow-sm p-2"
