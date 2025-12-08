@@ -11,14 +11,22 @@ export default function Portas() {
     const toggleDoor = async () => {
         if (isPending) return;
 
-        setIsPending(true);
-        // Simulate network delay for better UX feel
-        await new Promise(resolve => setTimeout(resolve, 600));
+        try {
+            setIsPending(true);
+            // Simulate network delay for better UX feel
+            await new Promise(resolve => setTimeout(resolve, 600));
 
-        const newState = !isOpen;
-        setIsOpen(newState);
-        connectToMqttBroker(newState ? 'aberta' : 'fechada');
-        setIsPending(false);
+            const newState = !isOpen;
+            setIsOpen(newState);
+            connectToMqttBroker(newState ? 'aberta' : 'fechada');
+
+        } catch (error) {
+            console.error('Erro ao alternar porta:', error);
+            setIsOpen(!isOpen);
+        }
+        finally {
+            setIsPending(false);
+        }
     }
 
     return (
@@ -80,8 +88,8 @@ export default function Portas() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             className={`relative w-48 h-48 rounded-full flex items-center justify-center transition-all duration-500 ${isOpen
-                                    ? "bg-emerald-500/10 border-emerald-500/30 shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]"
-                                    : "bg-red-500/10 border-red-500/30 shadow-[0_0_40px_-10px_rgba(239,68,68,0.3)]"
+                                ? "bg-emerald-500/10 border-emerald-500/30 shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]"
+                                : "bg-red-500/10 border-red-500/30 shadow-[0_0_40px_-10px_rgba(239,68,68,0.3)]"
                                 } border-2 cursor-pointer group`}
                         >
                             <AnimatePresence mode="wait">
@@ -132,8 +140,8 @@ export default function Portas() {
                             onClick={toggleDoor}
                             disabled={isPending}
                             className={`w-full py-4 px-6 rounded-xl font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${isOpen
-                                    ? "bg-red-500 hover:bg-red-600 shadow-red-500/20"
-                                    : "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20"
+                                ? "bg-red-500 hover:bg-red-600 shadow-red-500/20"
+                                : "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20"
                                 } ${isPending ? "opacity-70 cursor-not-allowed" : ""}`}
                         >
                             {isPending ? (
