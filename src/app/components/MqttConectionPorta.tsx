@@ -1,10 +1,7 @@
 import mqtt from 'mqtt';
 
 export default function connectToMqttBroker(mensagem: string) {
-  const url = process.env.NEXT_PUBLIC_MQTT_BROKER_URL || '';
-  if (!url) {
-    console.error("ERRO: A variável de ambiente NEXT_PUBLIC_MQTT_BROKER_URL não está definida.");
-  }
+  const url = "wss://broker.emqx.io:8083/mqtt";
 
   const client = mqtt.connect(url);
 
