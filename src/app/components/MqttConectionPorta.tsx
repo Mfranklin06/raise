@@ -1,7 +1,7 @@
 import mqtt from 'mqtt';
 
 export default function connectToMqttBroker(mensagem: string) {
-  const url = "wss://broker.emqx.io:8083/mqtt";
+  const url = "wss://broker.emqx.io:8084/mqtt";
 
   const client = mqtt.connect(url);
 
