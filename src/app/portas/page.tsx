@@ -1,4 +1,5 @@
 'use client'
+// Logic update verified
 import React, { useState, useEffect, useCallback } from "react";
 import { useMqtt } from "@/context/mqtt-context";
 import { motion, AnimatePresence } from "framer-motion";
