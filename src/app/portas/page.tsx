@@ -1,34 +1,56 @@
 'use client'
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useMqtt } from "@/context/mqtt-context";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Unlock, DoorOpen, DoorClosed, ShieldCheck, AlertCircle } from "lucide-react";
+import { Unlock, DoorOpen, DoorClosed, ShieldCheck, AlertCircle, Timer } from "lucide-react";
 
 export default function Portas() {
     const [isOpen, setIsOpen] = useState(false);
     const [isPending, setIsPending] = useState(false);
+    const [countdown, setCountdown] = useState<number | null>(null);
     const { publish } = useMqtt();
 
-    const toggleDoor = async () => {
-        if (isPending) return;
+    const handleAutoClose = useCallback(() => {
+        setIsOpen(false);
+        setCountdown(null);
+        publish("porta/lab_pesquisa", "fechada");
+    }, [publish]);
+
+    // Effect for countdown timer
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (isOpen && countdown !== null && countdown > 0) {
+            interval = setInterval(() => {
+                setCountdown((prev) => (prev !== null ? prev - 1 : null));
+            }, 1000);
+        } else if (isOpen && countdown === 0) {
+            // Auto close when countdown hits 0
+            handleAutoClose();
+        }
+
+        return () => clearInterval(interval);
+    }, [isOpen, countdown, handleAutoClose]);
+
+    const handleOpenDoor = async () => {
+        if (isPending || isOpen) return; // Prevent if already open or pending
 
         try {
             setIsPending(true);
             // Simulate network delay for better UX feel
             await new Promise(resolve => setTimeout(resolve, 600));
 
-            const newState = !isOpen;
-            setIsOpen(newState);
-            publish("porta/lab_pesquisa", newState ? 'aberta' : 'fechada');
+            setIsOpen(true);
+            setCountdown(5); // Start 5s countdown
+            publish("porta/lab_pesquisa", "aberta");
 
         } catch (error) {
-            console.error('Erro ao alternar porta:', error);
-            setIsOpen(!isOpen);
-        }
-        finally {
+            console.error('Erro ao abrir porta:', error);
+            setIsOpen(false);
+        } finally {
             setIsPending(false);
         }
-    }
+    };
 
     return (
         <main className="relative min-h-screen flex flex-col items-center justify-center bg-background text-foreground overflow-hidden p-6">
@@ -84,14 +106,14 @@ export default function Portas() {
 
                         {/* Icon Container */}
                         <motion.button
-                            onClick={toggleDoor}
-                            disabled={isPending}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                            onClick={handleOpenDoor}
+                            disabled={isPending || isOpen}
+                            whileHover={{ scale: isOpen ? 1 : 1.05 }}
+                            whileTap={{ scale: isOpen ? 1 : 0.95 }}
                             className={`relative w-48 h-48 rounded-full flex items-center justify-center transition-all duration-500 ${isOpen
-                                ? "bg-emerald-500/10 border-emerald-500/30 shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]"
-                                : "bg-red-500/10 border-red-500/30 shadow-[0_0_40px_-10px_rgba(239,68,68,0.3)]"
-                                } border-2 cursor-pointer group`}
+                                ? "bg-emerald-500/10 border-emerald-500/30 shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)] cursor-default"
+                                : "bg-red-500/10 border-red-500/30 shadow-[0_0_40px_-10px_rgba(239,68,68,0.3)] cursor-pointer hover:bg-red-500/20"
+                                } border-2 group`}
                         >
                             <AnimatePresence mode="wait">
                                 {isOpen ? (
@@ -101,8 +123,16 @@ export default function Portas() {
                                         animate={{ opacity: 1, scale: 1, rotate: 0 }}
                                         exit={{ opacity: 0, scale: 0.5, rotate: 20 }}
                                         transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                        className="relative"
                                     >
                                         <DoorOpen className="w-20 h-20 text-emerald-500" />
+                                        <motion.div
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full"
+                                        >
+                                            {countdown}
+                                        </motion.div>
                                     </motion.div>
                                 ) : (
                                     <motion.div
@@ -127,30 +157,39 @@ export default function Portas() {
                                 layout
                                 className="text-2xl font-semibold"
                             >
-                                {isOpen ? "Porta Aberta" : "Porta Fechada"}
+                                {isOpen ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        Aberta <span className="text-emerald-500 text-sm font-mono bg-emerald-500/10 px-2 py-0.5 rounded-md">Fechando em {countdown}s</span>
+                                    </span>
+                                ) : "Porta Fechada"}
                             </motion.h2>
                             <p className="text-sm text-muted-foreground">
                                 {isOpen
-                                    ? "Acesso liberado para entrada"
-                                    : "Acesso bloqueado por segurança"}
+                                    ? "Passagem liberada temporariamente"
+                                    : "Toque abaixo para liberar o acesso"}
                             </p>
                         </div>
 
                         {/* Action Button */}
                         <button
-                            onClick={toggleDoor}
-                            disabled={isPending}
+                            onClick={handleOpenDoor}
+                            disabled={isPending || isOpen}
                             className={`w-full py-4 px-6 rounded-xl font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${isOpen
-                                ? "bg-red-500 hover:bg-red-600 shadow-red-500/20"
+                                ? "bg-muted/50 text-muted-foreground cursor-default shadow-none border border-border" // Disabled look
                                 : "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20"
                                 } ${isPending ? "opacity-70 cursor-not-allowed" : ""}`}
                         >
                             {isPending ? (
                                 <span className="animate-pulse">Processando...</span>
+                            ) : isOpen ? (
+                                <>
+                                    <Timer className="w-5 h-5 animate-spin-slow" />
+                                    Fechamento Automático...
+                                </>
                             ) : (
                                 <>
-                                    {isOpen ? <Lock className="w-5 h-5" /> : <Unlock className="w-5 h-5" />}
-                                    {isOpen ? "Trancar Porta" : "Destrancar Porta"}
+                                    <Unlock className="w-5 h-5" />
+                                    Abrir Porta
                                 </>
                             )}
                         </button>
