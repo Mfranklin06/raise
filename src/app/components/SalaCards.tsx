@@ -6,7 +6,7 @@ import { UnidadeAC } from "@/lib/data";
 import { Thermometer, Wind, Zap, Power, Settings, Activity, ArrowLeft, Droplets, Gauge } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MqttEnvioDeRaw } from "./MqttConection";
+import { useMqttControl } from "@/hooks/use-mqtt-control";
 import { motion } from "framer-motion";
 
 type PendingChange = Record<string, string | number>;
@@ -24,6 +24,7 @@ export default function SalaCard({
   const [pendingChanges, setPendingChanges] = useState<PendingChangesMap>({});
   const [isUpdating, setIsUpdating] = useState<UpdatingMap>({});
   const [error, setError] = useState<string | null>(null);
+  const { sendRaw } = useMqttControl();
 
   useEffect(() => {
     setUnidadeState(unidade);
@@ -134,7 +135,7 @@ export default function SalaCard({
             </button>
           ) : (
             <button
-              onClick={async () => { await sendUpdate(u.id.toString()); await MqttEnvioDeRaw(u.id.toString()); }}
+              onClick={async () => { await sendUpdate(u.id.toString()); sendRaw(u); }}
               disabled={!hasPendingChanges || isUpdatingUnit}
               className={`flex-1 md:flex-none py-2.5 px-6 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${hasPendingChanges
                 ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20'

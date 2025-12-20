@@ -4,6 +4,7 @@ import { ThemeProvider as NextThemeProvider } from "next-themes";
 import './globals.css'
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { MqttProvider } from "../context/mqtt-context";
 
 export const metadata: Metadata = {
   title: "RAISE",
@@ -24,7 +25,9 @@ export default function RootLayout({
           </header>
           <main className="flex-1">
             <ThemeRegistry>
-              {children}
+              <MqttProvider>
+                {children}
+              </MqttProvider>
             </ThemeRegistry>
           </main>
           <footer>

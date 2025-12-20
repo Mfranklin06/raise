@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Thermometer, Wind, Zap, Power, ArrowRight, Activity } from 'lucide-react';
 import { InteractiveParameterControl } from './InteractiveParameters';
 import type { UnidadeAC } from '@/lib/data';
-import { MqttEnvioDeRaw } from './MqttConection';
+import { useMqttControl } from "@/hooks/use-mqtt-control";
 
 type PendingChange = Record<string, string | number>;
 type PendingChangesMap = Record<string, PendingChange>;
@@ -24,6 +24,7 @@ export default function SalasCards({
   const [isUpdating, setIsUpdating] = useState<UpdatingMap>({});
   const [errorMap, setErrorMap] = useState<Record<string, string | null>>({});
   const [searchTerm, setSearchTerm] = useState('');
+  const { sendRaw } = useMqttControl();
 
   const updateParameter = (unidadeId: string, parameter: string, value: number | string) => {
     setUnidadeState((prev) =>
@@ -212,7 +213,7 @@ export default function SalasCards({
                       </button>
                     ) : (
                       <button
-                        onClick={async () => { await sendUpdate(u.id.toString()); await MqttEnvioDeRaw(u.id.toString()); }}
+                        onClick={async () => { await sendUpdate(u.id.toString()); sendRaw(u); }}
                         disabled={!hasPendingChanges || isUpdatingUnit}
                         className={`w-full py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${hasPendingChanges
                           ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20'

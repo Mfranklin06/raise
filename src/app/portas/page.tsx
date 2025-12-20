@@ -1,12 +1,13 @@
 'use client'
 import React, { useState } from "react";
-import connectToMqttBroker from "../components/MqttConectionPorta";
+import { useMqtt } from "@/context/mqtt-context";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Unlock, DoorOpen, DoorClosed, ShieldCheck, AlertCircle } from "lucide-react";
 
 export default function Portas() {
     const [isOpen, setIsOpen] = useState(false);
     const [isPending, setIsPending] = useState(false);
+    const { publish } = useMqtt();
 
     const toggleDoor = async () => {
         if (isPending) return;
@@ -18,7 +19,7 @@ export default function Portas() {
 
             const newState = !isOpen;
             setIsOpen(newState);
-            connectToMqttBroker(newState ? 'aberta' : 'fechada');
+            publish("porta/lab_pesquisa", newState ? 'aberta' : 'fechada');
 
         } catch (error) {
             console.error('Erro ao alternar porta:', error);

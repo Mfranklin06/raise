@@ -12,6 +12,12 @@ export interface UnidadeAC {
   current_modo: string | null;
   current_ventilacao: string | null;
   last_updated_at: string | null;
+
+  // Optional fields for runtime data or legacy compatibility
+  current_raw_code?: string;
+  raw_code?: string;
+  raw?: string;
+  nome?: string;
 }
 
 export interface CodigoRaw {
@@ -193,7 +199,7 @@ export async function updateUnidadeACState(
 
 export const getUnidadesComEstadoECodigo = async () => {
   try {
-    
+
     const { rows } = await db.query(`
       SELECT
         ua.*, -- Pega todas as colunas da tabela de unidades
@@ -220,7 +226,7 @@ export const getUnidadesComEstadoECodigo = async () => {
         ua.id;
     `);
 
-    
+
     return rows;
   } catch (error) {
     console.error("Erro ao buscar unidades com estado e código:", error);
@@ -246,7 +252,7 @@ export const findRawCodeForState = async (
          AND config_modo IS NOT DISTINCT FROM $2
          AND config_temperatura IS NOT DISTINCT FROM $3
          AND config_ventilacao IS NOT DISTINCT FROM $4
-       LIMIT 1;`, 
+       LIMIT 1;`,
       [unidadeId, modo, temperatura, ventilacao]
     );
 
@@ -254,7 +260,7 @@ export const findRawCodeForState = async (
       return rows[0].raw_code as string;
     }
 
-    return null; 
+    return null;
   } catch (error) {
     console.error("Erro ao buscar código raw:", error);
     return null;

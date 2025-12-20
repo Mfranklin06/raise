@@ -30,11 +30,7 @@ export default function HeroSection() {
       {/* --- BACKGROUND TECH --- */}
       {/* Grid Pattern sutil usando CSS puro */}
       <div
-        className="absolute inset-0 z-0 opacity-[0.4] dark:opacity-[0.2] pointer-events-none"
-        style={{
-          backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
-          backgroundSize: '40px 40px'
-        }}
+        className="absolute inset-0 z-0 opacity-[0.4] dark:opacity-[0.2] pointer-events-none bg-grid-pattern"
       />
 
       {/* Vignette (sombra nas bordas) para focar no centro */}
@@ -79,7 +75,7 @@ export default function HeroSection() {
               {/* Botão Primário Customizado (Substituindo MUI) */}
               <Link
                 href="/salas"
-                className="group relative inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-base bg-primary-strong rounded-lg overflow-hidden transition-all hover:bg-primary hover:text-primary-foreground hover:scale-[1.02] focus:ring-2 focus:ring-ring focus:outline-none shadow-lg shadow-primary/20"
+                className="group relative inline-flex items-center justify-center px-8 py-4 font-semibold text-base bg-primary-strong rounded-lg overflow-hidden transition-all hover:bg-primary hover:text-primary-foreground hover:scale-[1.02] focus:ring-2 focus:ring-ring focus:outline-none shadow-lg shadow-primary/20"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Acessar Salas <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
