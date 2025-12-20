@@ -250,7 +250,6 @@ export default function AboutSection() {
                   width={640}
                   height={640}
                   className="object-cover w-full h-auto transform group-hover:scale-105 transition-transform duration-500"
-                  priority
                   sizes="(max-width: 1024px) 400px, 640px"
                 />
               </div>
