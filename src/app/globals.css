@@ -2,6 +2,8 @@
 
   --header-height: 4rem;
 
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
   --radius: 0.625rem;
 
   --background: #F8F9FA;
@@ -79,6 +81,9 @@
 
   --header-height: 4rem;
 
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
   --background: #071012;
   /* fundo quase preto azulado — muito escuro */
   --foreground: #eaf7f1;
@@ -125,6 +130,8 @@
 }
 
 @theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
