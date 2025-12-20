@@ -1,6 +1,9 @@
 export default function LoadingRooms() {
     return (
         <div className="space-y-6">
+            <div className="text-center font-mono">
+                <h1 className="text-2xl font-bold">Carregando salas</h1>
+            </div>
             {/* Search Bar Skeleton */}
             <div className="w-full max-w-md mx-auto mb-8">
                 <div className="h-12 bg-card/30 backdrop-blur-sm rounded-xl border border-border/50 animate-pulse" />
