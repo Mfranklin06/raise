@@ -115,7 +115,7 @@ export default function Footer() {
 
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} RAISE. Todos os direitos reservados.
+            © 2026 RAISE. Todos os direitos reservados.
           </p>
           <p className="text-xs text-muted-foreground/60">
             Desenvolvido com ❤️ para eficiência energética.
